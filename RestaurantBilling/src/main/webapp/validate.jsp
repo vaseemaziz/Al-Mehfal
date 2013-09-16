@@ -2,7 +2,7 @@
 <%@ page import="java.sql.*" %>
 <%@ page isThreadSafe="true" %>
 
-<jsp:useBean id="dbConn" class="dbbean.DatabaseBean">
+<jsp:useBean id="dbConn" class="com.billing.dbbean.DatabaseBean">
 </jsp:useBean>
 
 <%
