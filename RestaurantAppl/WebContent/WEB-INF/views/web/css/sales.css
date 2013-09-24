@@ -1,0 +1,108 @@
+.content {
+	float: left;
+	position: relative;
+	width: 100%;
+	height: auto;
+	text-align: left;
+	margin-top: 20px;
+}
+
+.content .container {
+	max-width: 1000px;
+	margin: auto;
+	padding-left: 10px;
+	padding-right: 10px;
+	position: relative;
+}
+
+.content .container .block {
+	max-width: 1000px;
+	float: left;
+	position: relative;
+	text-align: left;
+	font-size: 15px;
+}
+
+.content .container .block div .myTabContent {
+	float: left;
+	position: relative;
+	width: 96%;
+	margin-left: 2%;
+	margin-right: 2%;
+	margin-top: 10px;
+	margin-bottom: 5px;
+}
+
+table.noBorder {
+	border-collapse: collapse;
+}
+
+table.noBorder td {
+	border: none;
+	padding: 3px;
+}
+
+table.noBorder td input[type="text"] {
+	border: 1px solid #aaa;
+	width: 180px;
+	height: 20px;
+	line-height: 20px;
+	outline: none;
+}
+
+table.noBorder td input[type="text"].disabled {
+	width: 180px;
+	height: 20px;
+	font-size: 18px;
+	font-weight: bold;
+	line-height: 20px;
+	color: black;
+	background: transparent;
+	cursor: default;
+	border: none;
+	outline: none;
+}
+
+table.noBorder td input[type="text"]:focus {
+	background: #eee;
+}
+
+table.border {
+	border-collapse: collapse;
+}
+
+table.border th {
+	border: 1px solid #aaa;
+	background: #eee;
+	padding: 5px;
+	font-size: 13px;
+	font-weight: bold;
+}
+
+table.border td {
+	border: 1px solid #aaa;
+	padding: 3px;
+}
+
+table.border td img {
+	cursor: pointer;
+}
+
+table.border td.noBorder {
+	border: none;
+}
+
+table.border td input[type="text"] {
+	width: 150px;
+	height: 20px;
+	font-size: 16px;
+	line-height: 20px;
+	padding-left: 2px;
+	padding-right: 2px;
+	border: none;
+}
+
+table.border td input[type="text"]:focus {
+	border: 1px solid #ddd;
+	outline: none;
+}

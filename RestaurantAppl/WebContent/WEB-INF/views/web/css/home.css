@@ -1,0 +1,24 @@
+.content {
+	float: left;
+	position: relative;
+	width: 100%;
+	height: auto;
+	text-align: left;
+	margin-top: 20px;
+}
+
+.content .container {
+	max-width: 1000px;
+	margin: auto;
+	padding-left: 10px;
+	padding-right: 10px;
+	position: relative;
+}
+
+.content .container .block {
+	max-width: 1000px;
+	float: left;
+	position: relative;
+	text-align: left;
+	font-size: 15px;
+}
