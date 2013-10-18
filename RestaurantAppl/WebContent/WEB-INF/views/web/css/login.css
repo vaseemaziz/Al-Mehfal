@@ -10,6 +10,7 @@ body {
 
 .header {
 	width: 100%;
+	min-width: 1000px;
 	position: relative;
 	background: #00a2e8;
 	-webkit-box-shadow: 0px 4px 6px #aaa;
@@ -29,6 +30,7 @@ body {
 
 .content {
 	width: 100%;
+	min-width: 1000px;
 	position: relative;
 	background: white;
 }

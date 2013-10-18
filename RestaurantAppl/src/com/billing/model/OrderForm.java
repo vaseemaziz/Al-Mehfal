@@ -1,10 +1,9 @@
 package com.billing.model;
 
 import java.util.List;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import org.hibernate.validator.constraints.NotBlank;
 
 
 public class OrderForm {
@@ -12,18 +11,17 @@ public class OrderForm {
 	private long billNum;
 	private String billDate;
 	private double billAmount;
-	private String waiterId;
+	private double discount;
+	private double billNetAmount;
+	private String createdBy;
 	
-	@NotNull @Size(min=1, max=50)
-	private String custName;
+	@NotBlank(message="Select a sales type")
+	private String salesType;
 	
-	@NotNull @Size(min=1, max=5)
+	@NotBlank(message="Select a table number")
 	private String tableNum;
 	
-	@Min(value=1) @Max(value=99)
-	private short chairNum;
-	
-	@NotNull
+	@NotNull @Valid
 	private List<OrderItem> orderedItems;
 	
 	
@@ -35,45 +33,15 @@ public class OrderForm {
 		this.billNum = billNum;
 	}
 	
-	public String getDate() {
+	
+	public String getBillDate() {
 		return billDate;
 	}
 	
-	public void setDate(String billDate) {
+	public void setBillDate(String billDate) {
 		this.billDate = billDate;
 	}
 	
-	public String getCustName() {
-		return custName;
-	}
-	
-	public void setCustName(String custName) {
-		this.custName = custName;
-	}
-	
-	public String getTableNum() {
-		return tableNum;
-	}
-	
-	public void setTableNum(String tableNum) {
-		this.tableNum = tableNum;
-	}
-	
-	public short getChairNum() {
-		return chairNum;
-	}
-	
-	public void setChairNum(short chairNum) {
-		this.chairNum = chairNum;
-	}
-	
-	public String getWaiterId() {
-		return waiterId;
-	}
-	
-	public void setWaiterId(String waiterId) {
-		this.waiterId = waiterId;
-	}
 	
 	public void setBillAmount(double billAmount) {
 		this.billAmount = billAmount;
@@ -83,6 +51,52 @@ public class OrderForm {
 		return billAmount;
 	}
 	
+	
+	public double getDiscount() {
+		return discount;
+	}
+	
+	public void setDiscount(double discount) {
+		this.discount = discount;
+	}
+	
+	
+	public double getBillNetAmount() {
+		return billNetAmount;
+	}
+	
+	public void setBillNetAmount(double billNetAmount) {
+		this.billNetAmount = billNetAmount;
+	}
+	
+	
+	public String getCreatedBy() {
+		return createdBy;
+	}
+	
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
+	}
+	
+	
+	public String getSalesType() {
+		return salesType;
+	}
+	
+	public void setSalesType(String salesType) {
+		this.salesType = salesType;
+	}
+	
+	
+	public String getTableNum() {
+		return tableNum;
+	}
+	
+	public void setTableNum(String tableNum) {
+		this.tableNum = tableNum;
+	}
+	
+	
 	public List<OrderItem> getOrderedItems() {
 		return orderedItems;
 	}
@@ -91,4 +105,11 @@ public class OrderForm {
 		this.orderedItems = orderedItems;
 	}
 	
+	
+	@Override
+	public String toString() {
+		String str = billNum + ", " + billDate + ", " + billAmount + ", " + discount + ", " + billNetAmount + ", " +  
+						createdBy + ", " + salesType + ", " + tableNum + ", " + orderedItems;
+		return str;
+	}
 }

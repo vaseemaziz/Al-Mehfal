@@ -3,6 +3,8 @@ package com.billing.service;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -14,6 +16,9 @@ public class DishItemService {
 	private DriverManagerDataSource dataSource;
 	private JdbcTemplate jdbcTemplate;
 	
+	@Value("${DISH_LIST}")
+	private String dishListQuery;
+	
 	
 	public void setDataSource(DriverManagerDataSource dataSource) {
 		this.dataSource = dataSource;
@@ -22,9 +27,8 @@ public class DishItemService {
 	
 	public List<DishItem> getDishList(String term) {
 		
-		String sql = "select * from dish_items where item_name like '%" + term + "%'";
-		List<DishItem> items = jdbcTemplate.query(sql, new RowMapper<DishItem>() {
-
+		List<DishItem> items = jdbcTemplate.query(dishListQuery, new Object[]{'%' + term + '%'}, new RowMapper<DishItem>() {
+			
 			@Override
 			public DishItem mapRow(ResultSet rs, int rowNum) throws SQLException {
 				DishItem item = new DishItem();

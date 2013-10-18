@@ -1,21 +1,19 @@
 package com.billing.model;
 
+
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
+import org.hibernate.validator.constraints.NotBlank;
 
 
 public class OrderItem {
 	
-	private double itemCost;
-	
-	@NotNull(message="itemName: should not be null")
-	@Pattern(regexp="[a-zA-z]+", message="itemName: invalid pattern")
+	@NotBlank(message="Menu Item: This field is required")
 	private String itemName;
 	
-	@Pattern(regexp="[0-9]+", message="quantity: invalid pattern")
 	@Min(value=1)
 	private int quantity;
+	
+	private double itemCost;
 	
 	
 	public String getItemName() {
@@ -42,4 +40,9 @@ public class OrderItem {
 		this.quantity = quantity;
 	}
 	
+	
+	@Override
+	public String toString() {
+		return itemName + ", " + quantity + ", " + itemCost;
+	}
 }

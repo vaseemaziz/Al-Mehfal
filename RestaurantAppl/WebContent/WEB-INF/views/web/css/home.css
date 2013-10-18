@@ -1,24 +1,52 @@
-.content {
-	float: left;
-	position: relative;
-	width: 100%;
-	height: auto;
-	text-align: left;
-	margin-top: 20px;
+table.noBorder {
+	border-collapse: collapse;
 }
 
-.content .container {
-	max-width: 1000px;
-	margin: auto;
-	padding-left: 10px;
-	padding-right: 10px;
-	position: relative;
+table.noBorder th {
+	border: none;
+	background: #eee;
+	padding: 5px;
+	font-size: 13px;
+	font-weight: bold;
 }
 
-.content .container .block {
-	max-width: 1000px;
-	float: left;
-	position: relative;
-	text-align: left;
-	font-size: 15px;
+table.noBorder td {
+	border: none;
+	padding: 3px;
+}
+
+#right-bold {
+	text-align: right;
+	font-weight: bold;
+}
+
+#right-bold-large {
+	width: 160px;
+	text-align: right;
+	font-weight: bold;
+}
+
+table.border {
+	border-collapse: collapse;
+}
+
+table.border th {
+	border: 1px solid #aaa;
+	background: #eee;
+	padding: 5px;
+	font-size: 13px;
+	font-weight: bold;
+}
+
+table.border td {
+	border: 1px solid #aaa;
+	padding: 3px;
+}
+
+table.border td.noBorder {
+	border: none;
+}
+
+table.border td img {
+	cursor: pointer;
 }
