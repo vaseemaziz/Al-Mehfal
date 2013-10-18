@@ -111,10 +111,11 @@ public class UserController {
     	
     	List<OrderForm> pendingOrders = dishOrderService.getPendingOrders();
     	OrderForm newOrderForm = dishOrderService.createOrder();
-    	
+    	List<Categories> categoriesList = dishOrderService.getDishItems();
+		
+		model.addAttribute("dishItems", categoriesList);
     	model.addAttribute("orderForm", newOrderForm);
     	model.addAttribute("pendingOrders", pendingOrders);
-    	
     	model.addAttribute("printBill", true);
     	model.addAttribute("billNum", orderForm.getBillNum());
     	

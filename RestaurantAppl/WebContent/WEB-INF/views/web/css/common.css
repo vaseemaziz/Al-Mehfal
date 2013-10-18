@@ -197,7 +197,7 @@ body {
 }
 
 .content .container .block {
-	width: 1000px;
+	min-width: 1000px;
 	float: left;
 	position: relative;
 	text-align: left;
@@ -243,9 +243,9 @@ body {
 
 .content .container .block .right {
 	display: inline-block;
-	width: 440px;
 	float: right;
-	text-align: center;
+	width: 440px;
+	text-align: left;
 }
 
 fieldset {
@@ -265,7 +265,7 @@ input, select {
 }
 
 button#menuButton {
-	width: 130px;
+	width: 120px;
 	display: inline-block;
 	color: black;
 	padding: 5px;
@@ -289,4 +289,10 @@ button#menuButton1 {
 
 button#menuButton1:hover {
 	background: #b5b5b5;
+}
+
+#buttons {
+	width: 440px;
+	height: 250px;
+	overflow: auto;
 }

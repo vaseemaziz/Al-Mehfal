@@ -11,7 +11,6 @@
 		<link href="web/css/jquery.ui.css" rel="stylesheet" type="text/css" />
 		<link href="web/css/jquery.validation.css" rel="stylesheet" type="text/css" />
 		<link href="web/css/theme.blue.css" rel="stylesheet" type="text/css" />
-		<link href="web/css/accordian.css" rel="stylesheet" type="text/css" />
 		
 		<script src="web/js/jquery.js" type="text/javascript"></script>
 		<script src="web/js/jquery.ui.js" type="text/javascript"></script>
@@ -208,6 +207,14 @@
 						</div>
 						
 						<div class="right">
+							<h3>Menu Items</h3>
+							<div id="buttons">
+								<c:forEach items="${dishItems}" var="cateory">
+									<c:forEach items="${cateory.dishItems}" var="item">
+										<button id="menuButton" class="${item.itemCost}"> ${item.itemName} </button>
+									</c:forEach>
+								</c:forEach>
+							</div>
 							<h3> Current Bills </h3>
 							<table class="tablesorter" id="currentBills">
 								<thead>
@@ -215,7 +222,6 @@
 										<th> Bill No. </th>
 										<th> Bill Date </th>
 										<th> Net Amount </th>
-										<th> Sales Type </th>
 										<th> Table# </th>
 									</tr>
 								</thead>
@@ -225,7 +231,6 @@
 											<td> ${orderForm.billNum} </td>
 											<td> ${orderForm.billDate} </td>
 											<td> ${orderForm.billNetAmount} </td>
-											<td> ${orderForm.salesType} </td>
 											<td> ${orderForm.tableNum} </td>
 											<td> <input type="button" value="Open Order" 
 													class="button" id="openOrder" />
@@ -237,19 +242,6 @@
 						</div>
 					</form>
 				</div>
-			</div>
-		</div>
-		
-		<div id="dialog">
-			<div id="accordion">
-				<c:forEach items="${dishItems}" var="cateory">
-					<h3>${cateory.description}</h3>
-					<div>
-						<c:forEach items="${cateory.dishItems}" var="item">
-							<button id="menuButton" class="${item.itemCost}"> ${item.itemName} </button>
-						</c:forEach>
-					</div>
-				</c:forEach>
 			</div>
 		</div>
 		
