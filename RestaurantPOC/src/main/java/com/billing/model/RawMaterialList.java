@@ -1,10 +1,12 @@
 package com.billing.model;
 
 import java.util.List;
+import javax.validation.Valid;
 
 
 public class RawMaterialList {
 	
+	@Valid
 	private List<RawMaterial> materials;
 	
 	

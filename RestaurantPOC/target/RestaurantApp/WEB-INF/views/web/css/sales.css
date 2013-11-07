@@ -15,7 +15,7 @@ fieldset {
 legend {
 	padding: 8px;
 	border:1px solid #888;
-	color: white;
+	color: black;
 	font-size: 13px;
 	font-weight: bold;
 	text-align: center;
@@ -67,8 +67,8 @@ form {
 	border-collapse: collapse;
 }
 #table2 tr th {
-	border: 1px solid #aaa;
-	background: #262626;
+	border: 1px solid #fff;
+	background: #629cd7;
 	color: white;
 	text-align: center;
 	font-size: 13px;

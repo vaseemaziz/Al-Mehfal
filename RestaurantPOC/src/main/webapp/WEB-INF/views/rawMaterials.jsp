@@ -12,13 +12,67 @@
 	<head>
 		<title>HomePage - Al Mehfal Restaurant</title>
 		<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-
+		
 		<link rel="stylesheet" href="web/css/common.css" type="text/css" media="screen" />
-		<script type="text/javascript" src="web/js/jquery.min.js"></script>
+		<link href="web/css/jquery.validation.css" rel="stylesheet" type="text/css" />
+		
+		<script src="web/js/jquery.min.js" type="text/javascript"></script>
+		<script src="web/js/jquery.validation.js" type="text/javascript"></script>
+		<script src="web/js/jquery.validation-en.js" type="text/javascript"></script>
+		
+		<style type="text/css">
+			input[type="text"] {
+				width: 100%;
+				font-family: "Arial";
+				font-size: 12px;
+				height: 19px;
+				line-height: 18px;
+				color: black;
+				background-color: white;
+				border: 2px inset #cccccc;
+			}
+			input[type="text"].uneditable {
+				width: 100%;
+				height: 19px;
+				line-height: 18px;
+				background-color: #aaa;
+				color: black;
+				border: 2px inset #cccccc;
+			}
+			
+			table {
+				border-collapse: collapse;
+				margin-left: 30px;
+			}
+			table tr th {
+				border: 1px solid #fff;
+				background: #629cd7;
+				color: white;
+				padding: 5px;
+				text-align: center;
+				font-size: 13px;
+				line-height: 19px;
+				font-weight: bold;
+			}
+			table tr td {
+				padding-left: 8px;
+				padding-right: 8px;
+				padding-top: 4px;
+				padding-bottom: 4px;
+				vertical-align: middle;
+				border: 1px solid #aaa;
+			}
+			table tr td.noBorder {
+				border: none;
+			}
+			table tr td img {
+				cursor: pointer;
+			}
+		</style>
 	</head>
 
 	<body>
-		<div id="wrapper" style="background:#360000;">
+		<div id="wrapper">
 			<div id="header">
 				<div id="header_info">
 					<h2>Al Mehfal Restaurant</h2>
@@ -27,32 +81,42 @@
 			</div>
 
 			<div class="content_2columns">
-				<form method="post" name="materials" id="materials" action='<c:url value="/${role}/saveRawMaterials" />'>
+				<br />
+				<h2> Raw Materials Definition </h2>
+				<br />
+				<form method="post" name="rawMaterials" id="rawMaterials" action='<c:url value="/${role}/saveRawMaterials" />'>
 					<table>
 						<tr>
-							<td align="center" colspan="3">
-								<h2> Raw Materials Defination </h2>
+							<td colspan="4" align="right" class="noBorder">
+								<a id="addRow" href="javascript:void(0)"> Add Row </a> &nbsp; &nbsp;
+								<a href='<c:url value="/${role}/viewRawMaterials" />'>
+									View Raw Materials
+								</a>
 							</td>
 						</tr>
 						<tr>
-							<td align="center"> ID </td>
-							<td align="center"> Description </td>
-							<td align="center"> Unit of Measure </td>
+							<th align="center"> &nbsp;&nbsp; Raw Material ID &nbsp;&nbsp; </th>
+							<th align="center"> &nbsp;&nbsp; Raw Material Description &nbsp;&nbsp; </th>
+							<th align="center"> &nbsp;&nbsp; Raw Material Uom &nbsp;&nbsp; </th>
+							<th></th>
 						</tr>
 						<tr>
 							<td>
-								<input type="text" name="materials[0].id" />
+								<input type="text" name="materials[0].id" class="validate[required]" />
 							</td>
 							<td>
-								<input type="text" name="materials[0].desc" />
+								<input type="text" name="materials[0].desc" class="validate[required]" />
 							</td>
 							<td>
-								<input type="text" name="materials[0].uom" />
+								<input type="text" name="materials[0].uom" class="validate[required]" />
+							</td>
+							<td>
+								<img src="web/images/delete.png" width="18px" height="18px" />
 							</td>
 						</tr>
 						<tr>
-							<td colspan="3" align="center">
-								<input type="submit" />
+							<td colspan="4" align="center" class="noBorder">
+								<br /><input type="submit" value=" Submit " class="btn" />
 							</td>
 						</tr>
 					</table>
@@ -71,10 +135,64 @@
 				$(document).on("keyup","table tr:eq(-2) td input",function(event) {
 					var index = $("table tr").length-3;
 					$('<tr>' +
-							'<td> <input type="text" name="materials['+index+'].id" /> </td>' +
-							'<td> <input type="text" name="materials['+index+'].desc" /> </td>' +
-							'<td> <input type="text" name="materials['+index+'].uom" /> </td>' +
+							'<td> <input type="text" name="materials['+index+'].id" class="validate[required]" /> </td>' +
+							'<td> <input type="text" name="materials['+index+'].desc" class="validate[required]" /> </td>' +
+							'<td> <input type="text" name="materials['+index+'].uom" class="validate[required]" /> </td>' +
+							'<td> <img src="web/images/delete.png" width="18px" height="18px" /> </td>' +
 					'</tr>').insertAfter($("table tr:eq(-2)"));
+				});
+				
+				$("#addRow").click(function(event) {
+					var index = $("table tr").length-3;
+					$('<tr>' +
+							'<td> <input type="text" name="materials['+index+'].id" class="validate[required]" /> </td>' +
+							'<td> <input type="text" name="materials['+index+'].desc" class="validate[required]" /> </td>' +
+							'<td> <input type="text" name="materials['+index+'].uom" class="validate[required]" /> </td>' +
+							'<td> <img src="web/images/delete.png" width="18px" height="18px" /> </td>' +
+					'</tr>').insertAfter($("table tr:eq(-2)"));
+				});
+				
+				$(document).on("click", "table tbody tr td img", function(event) {
+					var rowIndex = $('table tr').length - 4;
+					if(rowIndex <= 0) {
+						alert("Must contain atleast one raw material details");
+					}
+					else {
+						var removeConfirm = confirm("Are you sure do you want to remove?");
+						if(removeConfirm == true) {
+							var row = $(this).parent().parent();
+							row.remove();
+						}
+					}
+				});
+				
+				$("#rawMaterials").validationEngine('attach', {
+					onValidationComplete: function(form, status) {
+						if(status == true) {
+							if($('table tr').length <= 3) {
+								alert("There should be atleast one item to order");
+								return false;
+							}
+							var count = $('table tr').length();
+							$('table tr').each(function(index) {
+								if(index > 1 && index < (count-2)) {
+									var one = $(this).find("td").eq(0).find('input').eq(0);
+									var newName = one.attr('name').replace(/\[[0-9]+\]/i, '[' + (index-2) + ']');
+									one.attr('name', newName);
+
+									var two = $(this).find("td").eq(1).find('input').eq(0);
+									newName = two.attr('name').replace(/\[[0-9]+\]/i, '[' + (index-2) + ']');
+									two.attr('name', newName);
+
+									var three = $(this).find("td").eq(2).find('input').eq(0);
+									newName = three.attr('name').replace(/\[[0-9]+\]/i, '[' + (index-2) + ']');
+									three.attr('name', newName);
+								}
+							});
+							return true;
+						}
+						return false;
+					}
 				});
 			});
 		</script>

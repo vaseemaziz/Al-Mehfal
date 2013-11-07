@@ -66,7 +66,7 @@
 	</head>
 
 	<body>
-		<div id="wrapper" style="background:#360000;">
+		<div id="wrapper">
 			<div id="header">
 				<div id="header_info">
 					<h2>Al Mehfal Restaurant</h2>
@@ -156,42 +156,42 @@
 												<col id="col4" />
 											</colgroup>
 											<tr>
-												<td align="right"> Bill No: </td>
+												<td align="right"> Bill No <b>:</b>&nbsp; </td>
 												<td>
 													<input class="uneditable" type="text" id="billNum" 
 														name="billNum" value="${orderForm.billNum}" readonly />
 												</td>
 			
-												<td align="right"> Bill Date: </td>
+												<td align="right"> Bill Date <b>:</b>&nbsp; </td>
 												<td>
 													<input class="uneditable" type="text" id="billDate" 
 														name="billDate" value="${orderForm.billDate}" readonly />
 												</td>
 											</tr>
 											<tr>
-												<td align="right"> Bill Amount: </td>
+												<td align="right"> Bill Amount <b>:</b>&nbsp; </td>
 												<td>
 													<input class="uneditable" type="text" id="billAmount"
 														name="billAmount" value="${orderForm.billAmount}" readonly />
 												</td>
-												<td align="right"> Discount: </td>
+												<td align="right"> Discount <b>:</b>&nbsp; </td>
 												<td>
 													<input type="text" class="validate[required]" id="billDiscount" 
 														name="discount" value="${orderForm.discount}" />
 												</td>
 											</tr>
 											<tr>
-												<td align="right"> Net Amount: </td>
+												<td align="right"> Net Amount <b>:</b>&nbsp; </td>
 												<td> <input class="uneditable" type="text" id="billNetAmount" 
 														name="billNetAmount" value="${orderForm.billNetAmount}" readonly />
 												</td>
-												<td align="right"> Created By: </td>
+												<td align="right"> Created By <b>:</b>&nbsp; </td>
 												<td> <input class="uneditable" type="text" name="createdBy" 
 														value="${orderForm.createdBy}" readonly />
 												</td>
 											</tr>
 											<tr>
-												<td align="right"> Sales Type: </td>
+												<td align="right"> Sales Type <b>:</b>&nbsp; </td>
 												<td>
 													<select name="salesType" id="salesType" class="validate[required]" onchange="setTableStatus()">
 														<option selected="selected"> Al-a-Carte </option>
@@ -211,7 +211,7 @@
 														}
 													</script>
 												</td>
-												<td align="right"> Table#: </td>
+												<td align="right"> Table# <b>:</b>&nbsp; </td>
 												<td>
 													<select name="tableNum" id="tableNum" class="validate[required]">
 														<option> T01 </option>
@@ -267,7 +267,7 @@
 														<input class="uneditable" type="text" value="${billLineAmt}" disabled />
 													</td>
 													<td>
-														<img src="web/images/remove.png" width="18px" height="18px" /> 
+														<img src="web/images/delete.png" width="18px" height="18px" /> 
 													</td>
 												</tr>
 											</c:forEach>
@@ -520,7 +520,8 @@
 						var sum = 0.00;
 						$('.menuitems tr').each(function() {
 							if(this.rowIndex > 1)
-								var cost = $(this).find("td").eq(3).find('input').val();
+								var cost = 0;
+								cost = $(this).find("td").eq(3).find('input').val();
 								
 								if(cost=='' || isNaN(cost))
 									cost = 0.00;
@@ -574,6 +575,9 @@
 										three.attr('name', newName);
 									}
 								});
+								
+								if($.trim($("#billNum").val()) == '')
+									$("#billNum").val(0);
 								return true;
 							}
 							return false;
@@ -625,7 +629,7 @@
 												'value="' + value + '" ' +
 												'size="8" disabled /> ' + 
 											'</td>' +
-											'<td> <img src="web/images/remove.png" '+  
+											'<td> <img src="web/images/delete.png" '+  
 												'width="18px" height="18px" />' + 
 											'</td>' +
 										'</tr>');

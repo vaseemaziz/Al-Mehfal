@@ -105,9 +105,6 @@ public class DishOrderDaoImpl implements DishOrderDao {
 		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 		String billDate = dateFormat.format(new Date());
 		
-		String newOrderNumberQuery = "INSERT INTO seq(n) VALUES (NULL);";
-		jdbcTemplate.update(newOrderNumberQuery);
-		
 		orderForm.setBillAmount(0.00);
 		orderForm.setDiscount(0.00);
 		orderForm.setBillNetAmount(0.00);
@@ -115,17 +112,6 @@ public class DishOrderDaoImpl implements DishOrderDao {
 		orderForm.setTableNum("");
 		orderForm.setBillDate(billDate);
 		orderForm.setBillType("Cash");
-		
-		String getNewOrderNumberQuery = "SELECT MAX(n) FROM seq";
-		List<String> list = jdbcTemplate.query(getNewOrderNumberQuery, new RowMapper<String>() {
-			@Override
-			public String mapRow(ResultSet rs, int rowNum) throws SQLException {
-				return rs.getString(1);
-			}
-		});
-		
-		long billNumber = Long.parseLong(list.get(0));
-		orderForm.setBillNum(billNumber);
 		
 		List<OrderItem> orderedItems = new ArrayList<OrderItem>();
 		orderForm.setOrderedItems(orderedItems);
@@ -139,12 +125,31 @@ public class DishOrderDaoImpl implements DishOrderDao {
 		if(billStatus==null)
 			billStatus = "pending";
 		
-		String deleteOrderQuery = "delete from orders where bill_number=?";
-		jdbcTemplate.update(deleteOrderQuery, new Object[] {orderForm.getBillNum()});
-		
-		String saveOrderQuery = "insert into orders(bill_number, bill_date, bill_amount, discount, net_amount, created_by, sales_type, table_num, bill_type, bill_status) values(?,?,?,?,?,?,?,?,?,?)";
-		jdbcTemplate.update(saveOrderQuery, new Object[]{orderForm.getBillNum(), orderForm.getBillDate(), orderForm.getBillAmount(), orderForm.getDiscount(), orderForm.getBillNetAmount(),
-													orderForm.getCreatedBy(), orderForm.getSalesType(), orderForm.getTableNum(), orderForm.getBillType(), billStatus});
+		String saveOrderQuery = "";
+		if(orderForm.getBillNum() == 0) {
+			saveOrderQuery = "insert into orders(bill_date, bill_amount, discount, net_amount, created_by, sales_type, table_num, bill_type, bill_status) values(?,?,?,?,?,?,?,?,?)";
+			jdbcTemplate.update(saveOrderQuery, new Object[]{orderForm.getBillDate(), orderForm.getBillAmount(), orderForm.getDiscount(), orderForm.getBillNetAmount(),
+					orderForm.getCreatedBy(), orderForm.getSalesType(), orderForm.getTableNum(), orderForm.getBillType(), billStatus});
+			
+			String getBillNumberQuery = "select bill_number from orders where bill_date=? and created_by=?";
+			List<String> list = jdbcTemplate.query(getBillNumberQuery, new Object[]{orderForm.getBillDate(),orderForm.getCreatedBy()}, 
+					new RowMapper<String>() {
+						@Override
+						public String mapRow(ResultSet rs, int row) throws SQLException {
+							return rs.getString("bill_number");
+						}
+			});
+			
+			orderForm.setBillNum(Long.parseLong(list.get(0)));
+		}
+		else {
+			String deleteOrderQuery = "delete from orders where bill_number=?";
+			jdbcTemplate.update(deleteOrderQuery, new Object[] {orderForm.getBillNum()});
+			
+			saveOrderQuery = "insert into orders(bill_number, bill_date, bill_amount, discount, net_amount, created_by, sales_type, table_num, bill_type, bill_status) values(?,?,?,?,?,?,?,?,?,?)";
+			jdbcTemplate.update(saveOrderQuery, new Object[]{orderForm.getBillDate(), orderForm.getBillAmount(), orderForm.getDiscount(), orderForm.getBillNetAmount(),
+					orderForm.getCreatedBy(), orderForm.getSalesType(), orderForm.getTableNum(), orderForm.getBillType(), billStatus});
+		}
 		
 		String deleteOrderedItemsQuery = "delete from dish_orders where bill_number=?";
 		jdbcTemplate.update(deleteOrderedItemsQuery, new Object[]{orderForm.getBillNum()});
@@ -213,7 +218,6 @@ public class DishOrderDaoImpl implements DishOrderDao {
 				@Override
 				public OrderForm mapRow(ResultSet rs, int rowNum) throws SQLException {
 					OrderForm orderForm = new OrderForm();
-					orderForm.setBillNum(billNums.get(rowNum));
 					orderForm.setBillAmount(rs.getDouble("bill_amount"));
 					orderForm.setDiscount(rs.getDouble("discount"));
 					orderForm.setBillNetAmount(rs.getDouble("net_amount"));
@@ -227,6 +231,7 @@ public class DishOrderDaoImpl implements DishOrderDao {
 			});
 		
 			OrderForm orderForm = list.get(0);
+			orderForm.setBillNum(billNums.get(i));
 			totalBill += orderForm.getBillNetAmount();
 			
 			String dishOrderQuery = "select item_name, quantity, item_cost from dish_orders where bill_number=?";

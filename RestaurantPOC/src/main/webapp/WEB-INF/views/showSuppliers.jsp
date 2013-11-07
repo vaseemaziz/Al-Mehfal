@@ -36,7 +36,7 @@
 	</head>
 
 	<body>
-		<div id="wrapper" style="background:#360000;">
+		<div id="wrapper">
 			<div id="header">
 				<div id="header_info">
 					<h2>Al Mehfal Restaurant</h2>

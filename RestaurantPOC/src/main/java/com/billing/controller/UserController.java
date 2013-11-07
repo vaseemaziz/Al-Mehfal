@@ -1,9 +1,7 @@
 package com.billing.controller;
 
 import java.util.List;
-
 import javax.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -11,14 +9,13 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import com.billing.model.BillFormat;
 import com.billing.model.Categories;
 import com.billing.model.OrderForm;
@@ -77,10 +74,11 @@ public class UserController {
     		orderForm.setTableNum("-");
     	
     	if(result.hasErrors()) {
-    		List<ObjectError> list = result.getAllErrors();
+    		List<FieldError> list = result.getFieldErrors();
     		String errors = "";
-    		for (ObjectError objectError : list)
-				errors += objectError.getDefaultMessage() + "\n";
+    		for (FieldError fieldError : list)
+				errors += fieldError.getField() + " : " + fieldError.getDefaultMessage() + "\n";
+    		
     		System.out.println(errors);
     	}
     	
@@ -103,10 +101,10 @@ public class UserController {
     		orderForm.setTableNum("-");
     	
     	if(result.hasErrors()) {
-    		List<ObjectError> list = result.getAllErrors();
+    		List<FieldError> list = result.getFieldErrors();
     		String errors = "";
-    		for (ObjectError objectError : list)
-				errors += objectError.getDefaultMessage() + "\n";
+    		for (FieldError fieldError : list)
+				errors += fieldError.getField() + " : " + fieldError.getDefaultMessage() + "\n";
     		
     		System.out.println(errors);
     	}

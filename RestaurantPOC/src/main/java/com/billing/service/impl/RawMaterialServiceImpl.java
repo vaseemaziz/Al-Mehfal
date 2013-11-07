@@ -22,4 +22,16 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 		rawMaterialDao.saveRawMaterials(materials);
 	}
 	
+	
+	@Override
+	public void deleteRawMaterial(String id) {
+		rawMaterialDao.deleteRawMaterial(id);
+	}
+	
+	
+	@Override
+	public List<RawMaterial> getRawMaterials() {
+		return rawMaterialDao.getRawMaterials();
+	}
+	
 }

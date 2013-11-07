@@ -11,7 +11,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -22,9 +22,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.billing.model.BillFormat;
 import com.billing.model.Categories;
 import com.billing.model.OrderForm;
+import com.billing.model.Purchases;
+import com.billing.model.RawMaterial;
 import com.billing.model.RawMaterialList;
 import com.billing.model.Supplier;
 import com.billing.service.DishOrderService;
+import com.billing.service.PurchasesService;
 import com.billing.service.RawMaterialService;
 import com.billing.service.SupplierService;
 
@@ -35,10 +38,15 @@ public class ManagerController {
 	
 	@Autowired
 	private DishOrderService dishOrderService;
+	
 	@Autowired
 	private RawMaterialService rawMaterialService;
+	
 	@Autowired
 	private SupplierService supplierService;
+	
+	@Autowired
+	private PurchasesService purchasesService;
 	
 	
 	@RequestMapping(value = "/home" , method = RequestMethod.GET)
@@ -85,10 +93,11 @@ public class ManagerController {
     		orderForm.setTableNum("-");
     	
     	if(result.hasErrors()) {
-    		List<ObjectError> list = result.getAllErrors();
+    		List<FieldError> list = result.getFieldErrors();
     		String errors = "";
-    		for (ObjectError objectError : list)
-				errors += objectError.getDefaultMessage() + "\n";
+    		for (FieldError fieldError : list)
+				errors += fieldError.getField() + " : " + fieldError.getDefaultMessage() + "\n";
+    		
     		System.out.println(errors);
     	}
     	
@@ -111,10 +120,10 @@ public class ManagerController {
     		orderForm.setTableNum("-");
     	
     	if(result.hasErrors()) {
-    		List<ObjectError> list = result.getAllErrors();
+    		List<FieldError> list = result.getFieldErrors();
     		String errors = "";
-    		for (ObjectError objectError : list)
-				errors += objectError.getDefaultMessage() + "\n";
+    		for (FieldError fieldError : list)
+				errors += fieldError.getField() + " : " + fieldError.getDefaultMessage() + "\n";
     		
     		System.out.println(errors);
     	}
@@ -181,10 +190,28 @@ public class ManagerController {
 	
 	
 	@RequestMapping(value="/saveRawMaterials", method=RequestMethod.POST)
-	public String saveRawMaterialsPage(@ModelAttribute("materials") RawMaterialList materials, Model model) {
+	public String saveRawMaterialsPage(@ModelAttribute("materials") @Valid RawMaterialList materials, BindingResult result, Model model) {
+		
+    	if(result.hasErrors()) {
+    		List<FieldError> list = result.getFieldErrors();
+    		String errors = "";
+    		for (FieldError fieldError : list)
+				errors += fieldError.getField() + " : " + fieldError.getDefaultMessage() + "\n";
+    		
+    		System.out.println(errors);
+    	}
+    	
 		rawMaterialService.saveRawMaterials(materials.getMaterials());
 		model.addAttribute("url", "rawMaterials");
 		return "success";
+	}
+	
+	
+	@RequestMapping(value="/viewRawMaterials", method=RequestMethod.GET)
+	public String viewRawMaterialsPage(Model model) {
+		List<RawMaterial> list = rawMaterialService.getRawMaterials();
+		model.addAttribute("list", list);
+		return "viewRawMaterials";
 	}
 	
 	
@@ -192,6 +219,7 @@ public class ManagerController {
 	public String suppliers(Model model) {
 		Supplier supplier = supplierService.createSupplier();
 		model.addAttribute("supplier", supplier);
+		model.addAttribute("mode", "save");
 		return "suppliers";
 	}
 	
@@ -200,7 +228,8 @@ public class ManagerController {
 	public String editSupplier(@RequestParam("id") String id, Model model) {
 		Supplier supplier = supplierService.getSupplier(Integer.parseInt(id));
 		model.addAttribute("supplier", supplier);
-		return "editSuppliers";
+		model.addAttribute("mode", "update");
+		return "suppliers";
 	}
 	
 	
@@ -226,6 +255,37 @@ public class ManagerController {
 		List<Supplier> list = supplierService.getSupplierList();
 		model.addAttribute("list", list);
 		return "showSuppliers";
+	}
+	
+	@RequestMapping(value="/expenses", method=RequestMethod.GET)
+	public String expenses(Model model) {
+		return "expenses";
+	}
+	
+	
+	@RequestMapping(value="/purchases", method=RequestMethod.GET)
+	public String purchases(Model model) {
+		Purchases purchases = purchasesService.createPurchase();
+		model.addAttribute("purchases", purchases);
+		model.addAttribute("amounts", purchasesService.getPurchasesAmounts());
+		model.addAttribute("materials", rawMaterialService.getRawMaterials());
+		return "purchases";
+	}
+	
+	@RequestMapping(value="/savePurchases", method=RequestMethod.POST)
+	public String savePurchases(@ModelAttribute("purchases") @Valid Purchases purchases, BindingResult result, Model model) {
+		
+		if(result.hasErrors()) {
+    		List<FieldError> list = result.getFieldErrors();
+    		String errors = "";
+    		for (FieldError fieldError : list)
+				errors += fieldError.getField() + " : " + fieldError.getDefaultMessage() + "\n";
+    		
+    		System.out.println(errors);
+    	}
+		
+		purchasesService.savePurchases(purchases);
+		return "redirect:/manager/purchases";
 	}
 	
 }

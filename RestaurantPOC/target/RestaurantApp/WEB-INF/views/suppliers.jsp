@@ -17,12 +17,11 @@
 		<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 
 		<link rel="stylesheet" href="web/css/common.css" type="text/css" media="screen" />
-		<link href="web/css/jquery.ui.css" rel="stylesheet" type="text/css" />
 		<link href="web/css/jquery.validation.css" rel="stylesheet" type="text/css" />
 		
 		<style type="text/css">
 			input[type="text"] {
-				width: 180px;
+				width: 220px;
 				font-family: "Arial";
 				font-size: 12px;
 				height: 19px;
@@ -36,22 +35,29 @@
 				color: black;
 				border: 2px inset #cccccc;
 			}
+			table {
+				margin-top: 20px;
+				margin-left: 70px;
+				border: none;
+			}
+			table tr td {
+				font-size: 13px;
+			}
 		</style>
 		
 		<script type="text/javascript" src="web/js/jquery.min.js"></script>
-		<script src="web/js/jquery.ui.js" type="text/javascript"></script>
 		<script src="web/js/jquery.validation.js" type="text/javascript"></script>
 		<script src="web/js/jquery.validation-en.js" type="text/javascript"></script>
 		
 		<script type="text/javascript">
 			$(document).ready(function() {
-				$("#tabs").tabs();
+				$("#supplier").validationEngine('attach');
 			});
 		</script>
 	</head>
 
 	<body>
-		<div id="wrapper" style="background:#360000;">
+		<div id="wrapper">
 			<div id="header">
 				<div id="header_info">
 					<h2>Al Mehfal Restaurant</h2>
@@ -62,99 +68,100 @@
 			</div>
 
 			<div class="content_2columns">
-				<form method="post" name="supplier" id="supplier" action='<c:url value="/${role}/saveSupplier" />'>
-					<table border="0" style="margin-left: 30px;">
-						<tr>
-							<td colspan="2"> <h1> Supplier Registration </h1> </td>
-						</tr>
+				<h1 style="margin-left:30px;"> Supplier Registration </h1>
+				<c:choose>
+					<c:when test="${mode eq 'save'}">
+						<form method="post" name="supplier" id="supplier" action='<c:url value="/${role}/saveSupplier" />'>
+					</c:when>
+					<c:otherwise>
+						<form method="post" name="supplier" id="supplier" action='<c:url value="/${role}/updateSupplier" />'>
+					</c:otherwise>
+				</c:choose>
+					<table>
 						<tr>
 							<td colspan="2" align="right">
 								<a href='<c:url value="/${role}/listSuppliers" />'> Show Suppliers </a> <br />
 							</td>
 						</tr>
 						<tr>
-								<td align="right"> Supplier ID: </td>
+								<td align="right"> Supplier ID&nbsp; : &nbsp; </td>
 								<td> <input class="uneditable" type="text" value="${supplier.supplierNum}" 
 										name="supplierNum" readonly /> </td>
 						</tr>
 						<tr>
-								<td align="right"> Supplier Name: </td>
-								<td> <input type="text" name="supplierName" value="${supplier.supplierName}" /> </td>
+								<td align="right"> Supplier Name&nbsp; : &nbsp; </td>
+								<td> <input type="text" name="supplierName" 
+										class="validate[required]" value="${supplier.supplierName}" /> </td>
 						</tr>
 						<tr>
-								<td align="right"> Created By: </td>
+								<td align="right"> Created By&nbsp; : &nbsp; </td>
 								<td> <input type="text" name="createdBy" value="${supplier.createdBy}" 
 										class="uneditable" readonly /> </td>
 						</tr>
 						<tr>
-								<td align="right"> Created On: </td>
+								<td align="right"> Created On&nbsp; : &nbsp; </td>
 								<td> <input type="text" name="createdOn" value="${supplier.createdOn}" 
 										class="uneditable" readonly /> </td>
 						</tr>
 						<tr>
-								<td align="right"> Last Updated By: </td>
+								<td align="right"> Last Updated By&nbsp; : &nbsp; </td>
 								<td> <input type="text" name="lastUpdatedBy" value="${supplier.lastUpdatedBy}" 
 										class="uneditable" readonly /> </td>
 						</tr>
 						<tr>
-								<td align="right"> Last Updated On: </td>
+								<td align="right"> Last Updated On&nbsp; : &nbsp; </td>
 								<td> <input type="text" name="lastUpdatedOn" value="${supplier.lastUpdatedOn}" 
 										class="uneditable" readonly /> </td>
 						</tr>
-					</table> <br /> <br />
-				
-					<div id="tabs" style="width: 400px;margin-left: 30px;">
-						<ul>
-							<li><a href="#tabs-1">Contact</a></li>
-							<li><a href="#tabs-2">Address</a></li>
-						</ul>
-						
-						<div id="tabs-1">
-							<table border="0">
-								<tr>
-									<td align="right"> First Contact Name: </td>
-									<td> <input type="text" name="firstContactName" value="${supplier.firstContactName}" /> </td>
-								</tr>
-								<tr>
-									<td align="right"> First Contact Num: </td>
-									<td> <input type="text" name="firstContactNum" value="${supplier.firstContactNum}" /> </td>
-								</tr>
-								<tr>
-									<td align="right"> First Mobile Num: </td>
-									<td> <input type="text" name="firstMobileNum" value="${supplier.firstMobileNum}" /> </td>
-								</tr>
-								<tr>
-									<td align="right"> Second Contact Name: </td>
-									<td> <input type="text" name="secondContactName" value="${supplier.secondContactName}" /> </td>
-								</tr>
-								<tr>
-									<td align="right"> Second Contact Num: </td>
-									<td> <input type="text" name="secondContactNum" value="${supplier.secondContactNum}" /> </td>
-								</tr>
-								<tr>
-									<td align="right"> Second Mobile Num: </td>
-									<td> <input type="text" name="secondMobileNum" value="${supplier.secondMobileNum}" /> </td>
-								</tr>
-							</table>
-						</div>
-						
-						<div id="tabs-2">
-							<table border="0">
-								<tr>
-									<td align="right"> Address Line 1: </td>
-									<td> <input type="text" name="addressLine1" value="${supplier.addressLine1}" /> </td>
-								</tr>
-								<tr>
-									<td align="right"> Address Line 2: </td>
-									<td> <input type="text" name="addressLine2" value="${supplier.addressLine2}" /> </td>
-								</tr>
-								<tr>
-									<td align="right"> Address Line 3: </td>
-									<td> <input type="text" name="addressLine3" value="${supplier.addressLine3}" /> </td>
-								</tr>
-							</table>
-						</div>
-					</div> <br />
+						<tr>
+							<td><br /> <h2> Contact </h2><br /></td>
+						</tr>
+						<tr>
+							<td align="right"> First Contact Name&nbsp; : &nbsp; </td>
+							<td> <input type="text" name="firstContactName" 
+									class="validate[required]"  value="${supplier.firstContactName}" /> </td>
+						</tr>
+						<tr>
+							<td align="right"> First Contact Num&nbsp; : &nbsp; </td>
+							<td> <input type="text" name="firstContactNum" 
+									class="validate[required]"  value="${supplier.firstContactNum}" /> </td>
+						</tr>
+						<tr>
+							<td align="right"> First Mobile Num&nbsp; : &nbsp; </td>
+							<td> <input type="text" name="firstMobileNum" 
+									class="validate[required]" value="${supplier.firstMobileNum}" /> </td>
+						</tr>
+						<tr>
+							<td align="right"> Second Contact Name&nbsp; : &nbsp; </td>
+							<td> <input type="text" name="secondContactName" value="${supplier.secondContactName}" /> </td>
+						</tr>
+						<tr>
+							<td align="right"> Second Contact Num&nbsp; : &nbsp; </td>
+							<td> <input type="text" name="secondContactNum" value="${supplier.secondContactNum}" /> </td>
+						</tr>
+						<tr>
+							<td align="right"> Second Mobile Num&nbsp; : &nbsp; </td>
+							<td> <input type="text" name="secondMobileNum" value="${supplier.secondMobileNum}" /> </td>
+						</tr>
+						<tr>
+							<td><br /> <h2> Address </h2><br /></td>
+						</tr>
+						<tr>
+							<td align="right"> Address Line 1&nbsp; : &nbsp; </td>
+							<td> <input type="text" name="addressLine1" 
+									class="validate[required]" value="${supplier.addressLine1}" /> </td>
+						</tr>
+						<tr>
+							<td align="right"> Address Line 2&nbsp; : &nbsp; </td>
+							<td> <input type="text" name="addressLine2" 
+									class="validate[required]" value="${supplier.addressLine2}" /> </td>
+						</tr>
+						<tr>
+							<td align="right"> Address Line 3&nbsp; : &nbsp; </td>
+							<td> <input type="text" name="addressLine3" 
+									class="validate[required]" value="${supplier.addressLine3}" /> </td>
+						</tr>
+					</table>
 					<input type="submit" class=".btn" style="margin-left: 320px;"  value=" Submit " />
 				</form>
 			</div>

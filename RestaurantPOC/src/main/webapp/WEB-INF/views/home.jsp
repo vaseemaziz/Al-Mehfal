@@ -17,11 +17,11 @@
 		<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 
 		<link rel="stylesheet" href="web/css/common.css" type="text/css" media="screen" />
-		<script type="text/javascript" src="web/js/jquery.js"></script>
+		<script type="text/javascript" src="web/js/jquery.min.js"></script>
 	</head>
 
 	<body>
-		<div id="wrapper" style="background:#360000;">
+		<div id="wrapper">
 			<div id="header">
 				<div id="header_info">
 					<h2>Al Mehfal Restaurant</h2>

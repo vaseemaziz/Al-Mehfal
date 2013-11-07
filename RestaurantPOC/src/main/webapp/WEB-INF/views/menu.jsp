@@ -26,6 +26,9 @@
 		<li>
 			<a href='<c:url value="/${role}/suppliers" />'>Suppliers</a>
 		</li>
+		<li>
+			<a href='<c:url value="/${role}/purchases" />'>Purchases</a>
+		</li>
 	</sec:authorize>
 	<li>
 		<a href='<c:url value="/${role}/profile" />'>Profile</a>
