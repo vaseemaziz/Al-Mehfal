@@ -2,31 +2,31 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
-	
+
 	<bean id="propertyConfigurer"
-	    class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-	    
-	    <property name="location" value="/WEB-INF/resources/jdbc.properties" />
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+
+		<property name="location" value="/WEB-INF/resources/jdbc.properties" />
 	</bean>
-	
-	<bean id="dataSource"
-	    class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
-	    
+
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+		destroy-method="close">
+
 		<property name="driverClass">
 			<value>${database.driver}</value>
 		</property>
-		
+
 		<property name="jdbcUrl">
 			<value>${database.url}</value>
 		</property>
-		
+
 		<property name="user">
 			<value>${database.user}</value>
 		</property>
-		
+
 		<property name="password">
 			<value>${database.password}</value>
 		</property>
-    </bean>
-    
+	</bean>
+
 </beans>

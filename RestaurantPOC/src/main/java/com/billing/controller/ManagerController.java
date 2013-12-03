@@ -1,5 +1,6 @@
 package com.billing.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -21,12 +22,18 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.billing.model.BillFormat;
 import com.billing.model.Categories;
+import com.billing.model.Employee;
+import com.billing.model.EmployeePayroll;
+import com.billing.model.EmployeePayrollList;
+import com.billing.model.ExpensesList;
 import com.billing.model.OrderForm;
 import com.billing.model.Purchases;
 import com.billing.model.RawMaterial;
 import com.billing.model.RawMaterialList;
 import com.billing.model.Supplier;
 import com.billing.service.DishOrderService;
+import com.billing.service.EmployeeService;
+import com.billing.service.ExpensesService;
 import com.billing.service.PurchasesService;
 import com.billing.service.RawMaterialService;
 import com.billing.service.SupplierService;
@@ -39,36 +46,15 @@ public class ManagerController {
 	@Autowired
 	private DishOrderService dishOrderService;
 	
-	@Autowired
-	private RawMaterialService rawMaterialService;
-	
-	@Autowired
-	private SupplierService supplierService;
-	
-	@Autowired
-	private PurchasesService purchasesService;
-	
-	
-	@RequestMapping(value = "/home" , method = RequestMethod.GET)
-	public String homePage(Model model) {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    	User user = (User) auth.getPrincipal();
-    	
-    	String username = user.getUsername();
-    	model.addAttribute("user", username);
-    	
-    	return "home";
-    }
-	
 	
 	@RequestMapping(value = "/sales" , method = RequestMethod.GET)
 	public String salesPage(Model model) {
-		if(model.containsAttribute("billToPrint")) {
-			return "sales";
-		}
-		
+		if(model.containsAttribute("billToPrint"))
+			return "sales/sales";
+
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     	User user = (User) auth.getPrincipal();
+    	
     	List<OrderForm> pendingOrders = dishOrderService.getPendingOrders(user.getUsername());
     	List<Categories> categoriesList = dishOrderService.getDishItems();
     	
@@ -82,23 +68,25 @@ public class ManagerController {
     	model.addAttribute("dishItems", categoriesList);
     	model.addAttribute("pendingOrders", pendingOrders);
     	
-        return "sales";
+        return "sales/sales";
     }
 	
 	
 	@RequestMapping(value = "/saveOrder", method = RequestMethod.POST)
-    public String saveOrder(@ModelAttribute("orderForm") @Valid OrderForm orderForm, BindingResult result, Model model) {
-		System.out.println(orderForm.getBillType());
+    public String saveOrder(@ModelAttribute("orderForm") @Valid OrderForm orderForm, BindingResult result, RedirectAttributes redirectAttributes) {
+		
     	if(!orderForm.getSalesType().equals("Al-a-Carte"))
     		orderForm.setTableNum("-");
     	
     	if(result.hasErrors()) {
     		List<FieldError> list = result.getFieldErrors();
-    		String errors = "";
+    		List<String> errors = new ArrayList<String>();
     		for (FieldError fieldError : list)
-				errors += fieldError.getField() + " : " + fieldError.getDefaultMessage() + "\n";
+				errors.add(fieldError.getField() + " : " + fieldError.getDefaultMessage());
     		
     		System.out.println(errors);
+    		redirectAttributes.addFlashAttribute("errors", errors);
+    		return "redirect:/manager/sales";
     	}
     	
     	dishOrderService.saveOrder(orderForm);
@@ -115,22 +103,24 @@ public class ManagerController {
 	
     @RequestMapping(value = "/printOrder", method = RequestMethod.POST)
     public String printOrder(@ModelAttribute("orderForm") @Valid OrderForm orderForm, BindingResult result, 
-    		Model model, RedirectAttributes redirectAttrs) {
+    		Model model, RedirectAttributes redirectAttributes) {
     	if(!orderForm.getSalesType().equals("Al-a-Carte"))
     		orderForm.setTableNum("-");
     	
     	if(result.hasErrors()) {
     		List<FieldError> list = result.getFieldErrors();
-    		String errors = "";
+    		List<String> errors = new ArrayList<String>();
     		for (FieldError fieldError : list)
-				errors += fieldError.getField() + " : " + fieldError.getDefaultMessage() + "\n";
+				errors.add(fieldError.getField() + " : " + fieldError.getDefaultMessage());
     		
     		System.out.println(errors);
+    		redirectAttributes.addFlashAttribute("errors", errors);
+    		return "redirect:/manager/sales";
     	}
     	
     	dishOrderService.closeOrder(orderForm);
-    	redirectAttrs.addFlashAttribute("billToPrint", true);
-		redirectAttrs.addFlashAttribute("orderForm", orderForm);
+    	redirectAttributes.addFlashAttribute("billToPrint", true);
+		redirectAttributes.addFlashAttribute("orderForm", orderForm);
     	return "redirect:/manager/sales";
     }
     
@@ -139,7 +129,7 @@ public class ManagerController {
     public String printBill(@RequestParam("billNum") String billNum, Model model) {
     	OrderForm orderForm= dishOrderService.openBill(Long.parseLong(billNum));
     	model.addAttribute("orderForm", orderForm);
-    	return "printBill";
+    	return "sales/printBill";
     }
     
     
@@ -147,7 +137,7 @@ public class ManagerController {
     public String printCreditBill(@RequestParam("creditId") String creditId, Model model) {
     	BillFormat billFormat = dishOrderService.printCreditBill(creditId);
     	model.addAttribute("billFormat", billFormat);
-    	return "printCreditBill";
+    	return "sales/printCreditBill";
     }
     
     
@@ -167,8 +157,11 @@ public class ManagerController {
 		@RequestParam(value="address", required=true) String address,
 		@RequestParam(value="mobile", required=true) String mobile) {
 		
-		dishOrderService.addCustomer(name, address, mobile);
-		return "Successfully Added";
+    	boolean b = dishOrderService.addCustomer(name, address, mobile);
+    	if(b)
+    		return "{\"msg\":\"Successfully Added\"}";
+    	else
+    		return "{\"error\":\"Already Customer Exists\"}";
 	}
 	
 	
@@ -177,32 +170,87 @@ public class ManagerController {
 		@RequestParam(value="verifyMobile", required=true) String verifyMobile) {
 		
 		String name = dishOrderService.verifyCustomer(verifyMobile);
-		if(name=="")
-			return "No record found";
-		return name;
+		if(name=="none")
+			return "{\"error\":\"No record found\"}";
+		
+		BillFormat billFormat = dishOrderService.printCreditBill(verifyMobile);
+		double due = billFormat.getTotalBill() - billFormat.getTotalPaidBill();
+		return "{\"name\":\"" + name + "\",\"due\":\"" + due + "\"}";
 	}
+	
+	
+	@RequestMapping(value="/creditDetails", method=RequestMethod.GET)
+	public String creditDetails(Model model) {
+		List<String[]> str = dishOrderService.getCustomerDetails();
+		model.addAttribute("list", str);
+		return "sales/credit";
+	}
+	
+	@RequestMapping(value="/payBill", method=RequestMethod.POST)
+	public String payBill(Model model,
+		@RequestParam(value="mobile", required=true) String mobile,
+		@RequestParam(value="paidAmount", required=true) String paidAmount) {
+		
+		mobile = mobile.trim();
+		paidAmount = paidAmount.trim();
+		
+    	dishOrderService.payBill(mobile, paidAmount);
+    	model.addAttribute("url", "/manager/creditDetails");
+		model.addAttribute("message", "Bill Updated");
+		return "success";
+	}
+	
+	
+	
+	
+	
+	@RequestMapping(value="/records", method=RequestMethod.GET)
+	public String records(Model model) {
+		return "redirect:/manager/rawMaterials";
+	}
+	
+	
+	
+	
+	
+	@Autowired
+	private RawMaterialService rawMaterialService;
 	
 	
 	@RequestMapping(value="/rawMaterials", method=RequestMethod.GET)
 	public String rawMaterialsPage(Model model) {
+		model.addAttribute("mode", "save");
 		return "rawMaterials";
 	}
 	
 	
+	@RequestMapping(value="/editRawMaterial", method=RequestMethod.POST)
+	public String editRawMaterialPage(@ModelAttribute("editRawMaterial") RawMaterial editRawMaterial, Model model) {
+		rawMaterialService.editRawMaterial(editRawMaterial);
+		model.addAttribute("url", "/manager/rawMaterials");
+		model.addAttribute("message", "Successfully updated");
+		return "success";
+	}
+	
+	
 	@RequestMapping(value="/saveRawMaterials", method=RequestMethod.POST)
-	public String saveRawMaterialsPage(@ModelAttribute("materials") @Valid RawMaterialList materials, BindingResult result, Model model) {
+	public String saveRawMaterialsPage(@ModelAttribute("materials") @Valid RawMaterialList materials, BindingResult result,
+			Model model, RedirectAttributes redirectAttributes) {
 		
     	if(result.hasErrors()) {
     		List<FieldError> list = result.getFieldErrors();
-    		String errors = "";
+    		List<String> errors = new ArrayList<String>();
     		for (FieldError fieldError : list)
-				errors += fieldError.getField() + " : " + fieldError.getDefaultMessage() + "\n";
+				errors.add(fieldError.getField() + " : " + fieldError.getDefaultMessage());
     		
     		System.out.println(errors);
+    		redirectAttributes.addFlashAttribute("errors", errors);
+    		return "redirect:/manager/rawMaterials";
     	}
     	
 		rawMaterialService.saveRawMaterials(materials.getMaterials());
-		model.addAttribute("url", "rawMaterials");
+		model.addAttribute("url", "/manager/rawMaterials");
+		model.addAttribute("message", "Successfully added");
 		return "success";
 	}
 	
@@ -210,17 +258,24 @@ public class ManagerController {
 	@RequestMapping(value="/viewRawMaterials", method=RequestMethod.GET)
 	public String viewRawMaterialsPage(Model model) {
 		List<RawMaterial> list = rawMaterialService.getRawMaterials();
+		model.addAttribute("mode", "view");
 		model.addAttribute("list", list);
-		return "viewRawMaterials";
+		return "rawMaterials";
 	}
+	
+	
+	
+	
+	@Autowired
+	private SupplierService supplierService;
 	
 	
 	@RequestMapping(value="/suppliers", method=RequestMethod.GET)
 	public String suppliers(Model model) {
 		Supplier supplier = supplierService.createSupplier();
 		model.addAttribute("supplier", supplier);
-		model.addAttribute("mode", "save");
-		return "suppliers";
+		model.addAttribute("url", "saveSupplier");
+		return "suppliers/suppliers";
 	}
 	
 	
@@ -228,24 +283,51 @@ public class ManagerController {
 	public String editSupplier(@RequestParam("id") String id, Model model) {
 		Supplier supplier = supplierService.getSupplier(Integer.parseInt(id));
 		model.addAttribute("supplier", supplier);
-		model.addAttribute("mode", "update");
-		return "suppliers";
+		model.addAttribute("url", "updateSupplier");
+		return "suppliers/suppliers";
 	}
 	
 	
 	@RequestMapping(value="/saveSupplier", method=RequestMethod.POST)
-	public String saveSupplier(@ModelAttribute("suppier") Supplier supplier, Model model) {
+	public String saveSupplier(@ModelAttribute("suppier") @Valid Supplier supplier, BindingResult result,
+			Model model, RedirectAttributes redirectAttributes) {
+		
+		if(result.hasErrors()) {
+    		List<FieldError> list = result.getFieldErrors();
+    		List<String> errors = new ArrayList<String>();
+    		for (FieldError fieldError : list)
+				errors.add(fieldError.getField() + " : " + fieldError.getDefaultMessage());
+    		
+    		System.out.println(errors);
+    		redirectAttributes.addFlashAttribute("errors", errors);
+    		return "redirect:/manager/suppliers";
+		}
+		
 		supplierService.saveSupplier(supplier);
-		model.addAttribute("url", "suppliers");
+		model.addAttribute("url", "/manager/suppliers");
+		model.addAttribute("message","Saved successfully");
 		return "success";
 	}
 	
 	
 	@RequestMapping(value="/updateSupplier", method=RequestMethod.POST)
-	public String updateSupplier(@ModelAttribute("suppier") Supplier supplier, Model model) {
+	public String updateSupplier(@ModelAttribute("suppier") @Valid Supplier supplier, BindingResult result,
+			Model model, RedirectAttributes redirectAttributes) {
+		
+		if(result.hasErrors()) {
+    		List<FieldError> list = result.getFieldErrors();
+    		List<String> errors = new ArrayList<String>();
+    		for (FieldError fieldError : list)
+				errors.add(fieldError.getField() + " : " + fieldError.getDefaultMessage());
+    		
+    		System.out.println(errors);
+    		redirectAttributes.addFlashAttribute("errors", errors);
+    		return "redirect:/manager/suppliers";
+		}
+		
 		supplierService.updateSupplier(supplier);
-		model.addAttribute("url", "suppliers");
-		model.addAttribute("message","Updated Successfully");
+		model.addAttribute("url", "/manager/suppliers");
+		model.addAttribute("message","Updated successfully");
 		return "success";
 	}
 	
@@ -254,13 +336,15 @@ public class ManagerController {
 	public String listSupplier(Model model) {
 		List<Supplier> list = supplierService.getSupplierList();
 		model.addAttribute("list", list);
-		return "showSuppliers";
+		return "suppliers/showSuppliers";
 	}
 	
-	@RequestMapping(value="/expenses", method=RequestMethod.GET)
-	public String expenses(Model model) {
-		return "expenses";
-	}
+	
+	
+	
+	
+	@Autowired
+	private PurchasesService purchasesService;
 	
 	
 	@RequestMapping(value="/purchases", method=RequestMethod.GET)
@@ -269,23 +353,214 @@ public class ManagerController {
 		model.addAttribute("purchases", purchases);
 		model.addAttribute("amounts", purchasesService.getPurchasesAmounts());
 		model.addAttribute("materials", rawMaterialService.getRawMaterials());
-		return "purchases";
+		return "purchases/purchases";
 	}
 	
 	@RequestMapping(value="/savePurchases", method=RequestMethod.POST)
-	public String savePurchases(@ModelAttribute("purchases") @Valid Purchases purchases, BindingResult result, Model model) {
+	public String savePurchases(@ModelAttribute("purchases") @Valid Purchases purchases, BindingResult result,
+			Model model, RedirectAttributes redirectAttributes) {
 		
 		if(result.hasErrors()) {
     		List<FieldError> list = result.getFieldErrors();
-    		String errors = "";
+    		List<String> errors = new ArrayList<String>();
     		for (FieldError fieldError : list)
-				errors += fieldError.getField() + " : " + fieldError.getDefaultMessage() + "\n";
+				errors.add(fieldError.getField() + " : " + fieldError.getDefaultMessage());
     		
     		System.out.println(errors);
+    		redirectAttributes.addFlashAttribute("errors", errors);
+    		return "redirect:/manager/purchases";
+    		
     	}
 		
 		purchasesService.savePurchases(purchases);
-		return "redirect:/manager/purchases";
+		model.addAttribute("url", "/manager/purchases");
+		model.addAttribute("message", "Saved successfully");
+		return "success";
+	}
+	
+	
+	@RequestMapping(value="/findPurchases", method=RequestMethod.GET)
+	public String findPurchases(Model model) {
+		return "purchases/findPurchases";
+	}
+	
+	
+	@RequestMapping(value="/getPurchases", method=RequestMethod.POST)
+	public String getPurchases(@RequestParam("pDate") String pDate,
+			@RequestParam("toDate") String toDate,
+			@RequestParam("sNum") String supplierNum, Model model, RedirectAttributes redirectAttrs) {
+		
+		List<Purchases> purchases = purchasesService.findPurchases(pDate, toDate, supplierNum);
+		redirectAttrs.addFlashAttribute("pDate", pDate);
+		redirectAttrs.addFlashAttribute("toDate", toDate);
+		redirectAttrs.addFlashAttribute("sNum", supplierNum);
+		redirectAttrs.addFlashAttribute("list", purchases);
+		
+		return "redirect:/manager/findPurchases";
+	}
+	
+	
+	
+	
+	
+	
+	@Autowired
+	private ExpensesService expensesService;
+	
+	
+	@RequestMapping(value="/expenses", method=RequestMethod.GET)
+	public String expenses(Model model) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    	User user = (User) auth.getPrincipal();
+    	model.addAttribute("user", user.getUsername());
+		return "expenses";
+	}
+	
+	@RequestMapping(value="/saveExpenses", method=RequestMethod.POST)
+	public String saveExpenses(@ModelAttribute("expenses") ExpensesList expenses, Model model) {
+		expensesService.saveExpenses(expenses);
+		model.addAttribute("url", "/manager/expenses");
+		model.addAttribute("message","Saved Successfully");
+		return "success";
+	}
+	
+	@RequestMapping(value="/viewExpenses", method=RequestMethod.GET)
+	public String viewExpenses(Model model) {
+		return "viewExpenses";
+	}
+	
+	@RequestMapping(value="/getExpenses", method=RequestMethod.POST)
+	public String getExpenses(
+			@RequestParam("fDate") String fromDate,
+			@RequestParam("tDate") String toDate, Model model,
+			RedirectAttributes redirectAttribs) {
+		
+		ExpensesList list = expensesService.getExpenses(fromDate, toDate);
+		redirectAttribs.addFlashAttribute("fDate", fromDate);
+		redirectAttribs.addFlashAttribute("tDate", toDate);
+		redirectAttribs.addFlashAttribute("list", list);
+		return "redirect:/manager/viewExpenses";
+	}
+	
+	
+	
+	
+	
+	@Autowired
+	private EmployeeService employeeService;
+	
+	
+	@RequestMapping(value="/employees", method=RequestMethod.GET)
+	public String employees(Model model) {
+		Employee emp = new Employee();
+		model.addAttribute("url", "/saveEmployee");
+		model.addAttribute("emp", emp);
+		return "employees";
+	}
+	
+	@RequestMapping(value="/editEmployee", method=RequestMethod.GET)
+	public String editEmployee(@RequestParam("id") String id, Model model) {
+		Employee emp = employeeService.getEmployee(id);
+		model.addAttribute("url", "/updateEmployee");
+		model.addAttribute("emp", emp);
+		return "employees";
+	}
+	
+	@RequestMapping(value="/deleteEmployee", method=RequestMethod.GET)
+	public String deleteEmployee(@RequestParam("id") String id, Model model) {
+		employeeService.deleteEmployee(id);
+		return "showEmployees";
+	}
+	
+	@RequestMapping(value="/saveEmployee", method=RequestMethod.POST)
+	public String saveEmployee(@ModelAttribute("employee") Employee employee, Model model) {
+		employeeService.saveEmployee(employee);
+		model.addAttribute("url", "/manager/employees");
+		model.addAttribute("message", "Saved successfully");
+		return "success";
+	}
+	
+	@RequestMapping(value="/updateEmployee", method=RequestMethod.POST)
+	public String editEmployee(@ModelAttribute("employee") Employee employee, Model model) {
+		employeeService.updateEmployee(employee);
+		model.addAttribute("url", "/manager/employees");
+		model.addAttribute("message", "Updated successfully");
+		return "success";
+	}
+	
+	@RequestMapping(value="/showEmployees", method=RequestMethod.GET)
+	public String showEmployess(Model model) {
+		List<Employee> list = employeeService.getEmployeeList();
+		model.addAttribute("list", list);
+		return "showEmployees";
+	}
+	
+	@RequestMapping(value="/payrolls", method=RequestMethod.GET)
+	public String payrolls(Model model) {
+		return "payrolls";
+	}
+	
+	
+	@RequestMapping(value="/findPayrolls", method=RequestMethod.POST)
+	public String findPayrolls(RedirectAttributes redirectAttributes, Model model,
+			@RequestParam("month") String month,
+			@RequestParam("year") String year) {
+		
+		List<EmployeePayroll> payrolls = employeeService.getPayrolls(month + " " + year);
+		if(payrolls.size() > 0) {
+			redirectAttributes.addFlashAttribute("month", month);
+			redirectAttributes.addFlashAttribute("year", year);
+			redirectAttributes.addFlashAttribute("payrolls", payrolls);
+			return "redirect:/manager/payrolls";
+		}
+		
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    	User user = (User) auth.getPrincipal();
+    	model.addAttribute("user", user.getUsername());
+    	
+		List<Employee> emp = employeeService.getEmployeeList();
+		model.addAttribute("empList", emp);
+		model.addAttribute("month", month);
+		model.addAttribute("year", year);
+		
+		return "employeePayroll";
+	}
+	
+	@RequestMapping(value="/savePayroll", method=RequestMethod.POST)
+	public String savePayroll(@ModelAttribute("payrolls") EmployeePayrollList payrolls, Model model) {
+		employeeService.savePayrolls(payrolls);
+		model.addAttribute("url", "/manager/payroll");
+		model.addAttribute("message", "Saved Successfully");
+		return "success";
+	}
+	
+	
+	@RequestMapping(value="/salesReports", method=RequestMethod.GET)
+	public String reports() {
+		return "salesReports";
+	}
+	
+	
+	@RequestMapping(value="/dateWiseReport", method=RequestMethod.POST)
+	public String report1(@RequestParam("fDate") String fDate, @RequestParam("tDate") String tDate, Model model) {
+		List<String[]> list = dishOrderService.getSalesReport1(fDate, tDate);
+		model.addAttribute("fDate",fDate);
+		model.addAttribute("tDate",tDate);
+		model.addAttribute("list", list);
+		return "salesReportsDateWise";
+	}
+	
+	@RequestMapping(value="/monthWiseReport", method=RequestMethod.POST)
+	public String report2(@RequestParam("year") String year, @RequestParam("fMonth") String fMonth, @RequestParam("tMonth") String tMonth, Model model) {
+		List<String[]> list = dishOrderService.getSalesReport2(fMonth, tMonth, year);
+		model.addAttribute("year", year);
+		String calendar[] = {"Jan","Feb","Mar","Apr","May","June","July","Aug","Sept","Oct","Nov","Dec"};
+		fMonth = calendar[Integer.parseInt(fMonth)-1];
+		tMonth = calendar[Integer.parseInt(tMonth)-1];
+		model.addAttribute("fMonth",fMonth);
+		model.addAttribute("tMonth",tMonth);
+		model.addAttribute("list", list);
+		return "salesReportsMonthWise";
 	}
 	
 }

@@ -40,7 +40,7 @@ public class SupplierDaoImpl implements SupplierDao {
 		String updateSupplierQuery = "update suppliers set supplier_name=?, last_updated_by=?, last_updated_on=?, first_contact_name=?, first_contact_num=?, " +
 										"first_mobile_num=?, second_contact_name=?, second_contact_num=?, second_mobile_num=?, " +
 										"address_line1=?, address_line2=?, address_line3=? where supplier_num=?";
-		System.out.println(updateSupplierQuery);
+		
 		jdbcTemplate.update(updateSupplierQuery, new Object[]{
 				supplier.getSupplierName(), username, lastUpdatedOn, supplier.getFirstContactName(), supplier.getFirstContactNum(),
 				supplier.getFirstMobileNum(), supplier.getSecondContactName(), supplier.getSecondContactNum(), supplier.getSecondMobileNum(),
@@ -50,14 +50,26 @@ public class SupplierDaoImpl implements SupplierDao {
 	
 	@Override
 	public void saveSupplier(Supplier supplier) {
-		String insertSupplierQuery = "insert into suppliers(supplier_num,supplier_name,created_by,created_on,last_updated_by,last_updated_on,first_contact_name,first_contact_num,first_mobile_num,second_contact_name,second_contact_num,second_mobile_num,address_line1,address_line2,address_line3) " + 
-										"values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-		jdbcTemplate.update(insertSupplierQuery, new Object[]{
-				supplier.getSupplierNum(), supplier.getSupplierName(), supplier.getCreatedBy(), supplier.getCreatedOn(),
+		if(supplier.getSupplierNum()==0) {
+			String insertSupplierQuery = "insert into suppliers(supplier_name,created_by,created_on,last_updated_by,last_updated_on,first_contact_name,first_contact_num,first_mobile_num,second_contact_name,second_contact_num,second_mobile_num,address_line1,address_line2,address_line3) " + 
+												"values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+			jdbcTemplate.update(insertSupplierQuery, new Object[]{
+				supplier.getSupplierName(), supplier.getCreatedBy(), supplier.getCreatedOn(),
 				supplier.getLastUpdatedBy(), supplier.getLastUpdatedOn(), supplier.getFirstContactName(), supplier.getFirstContactNum(),
 				supplier.getFirstMobileNum(), supplier.getSecondContactName(), supplier.getSecondContactNum(), supplier.getSecondMobileNum(),
 				supplier.getAddressLine1(), supplier.getAddressLine2(), supplier.getAddressLine3()
-		});
+			});
+		}
+		else {
+			String insertSupplierQuery = "insert into suppliers(supplier_num,supplier_name,created_by,created_on,last_updated_by,last_updated_on,first_contact_name,first_contact_num,first_mobile_num,second_contact_name,second_contact_num,second_mobile_num,address_line1,address_line2,address_line3) " + 
+											"values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+			jdbcTemplate.update(insertSupplierQuery, new Object[]{
+					supplier.getSupplierNum(), supplier.getSupplierName(), supplier.getCreatedBy(), supplier.getCreatedOn(),
+					supplier.getLastUpdatedBy(), supplier.getLastUpdatedOn(), supplier.getFirstContactName(), supplier.getFirstContactNum(),
+					supplier.getFirstMobileNum(), supplier.getSecondContactName(), supplier.getSecondContactNum(), supplier.getSecondMobileNum(),
+					supplier.getAddressLine1(), supplier.getAddressLine2(), supplier.getAddressLine3()
+			});
+		}
 	}
 	
 	
@@ -69,20 +81,8 @@ public class SupplierDaoImpl implements SupplierDao {
     	
     	DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 		String createdOn = dateFormat.format(new Date());
-    	
-		String newOrderNumberQuery = "INSERT INTO supplier_seq(n) VALUES (NULL);";
-		jdbcTemplate.update(newOrderNumberQuery);
-		
-		String getNewOrderNumberQuery = "SELECT MAX(n) FROM supplier_seq";
-		List<String> list = jdbcTemplate.query(getNewOrderNumberQuery, new RowMapper<String>() {
-			@Override
-			public String mapRow(ResultSet rs, int rowNum) throws SQLException {
-				return rs.getString(1);
-			}
-		});
 		
 		Supplier supplier = new Supplier();
-		supplier.setSupplierNum(Integer.parseInt(list.get(0)));
 		supplier.setCreatedBy(username);
 		supplier.setCreatedOn(createdOn);
 		supplier.setLastUpdatedBy("not updated");

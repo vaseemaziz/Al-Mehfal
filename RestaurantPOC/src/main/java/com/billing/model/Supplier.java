@@ -1,28 +1,18 @@
 package com.billing.model;
 
-import javax.validation.constraints.Min;
-
 import org.hibernate.validator.constraints.NotBlank;
 
 
 public class Supplier {
 	
-	@Min(value=1)
 	private int supplierNum;
 	
 	@NotBlank
 	private String supplierName;
 	
-	@NotBlank
 	private String createdBy;
-	
-	@NotBlank
 	private String createdOn;
-	
-	@NotBlank
 	private String lastUpdatedBy;
-	
-	@NotBlank
 	private String lastUpdatedOn;
 	
 	

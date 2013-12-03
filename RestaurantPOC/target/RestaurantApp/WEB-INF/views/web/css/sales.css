@@ -1,20 +1,22 @@
 #dishItems {
-	z-index:100;
+	z-index: 100;
 }
+
 fieldset {
 	margin-right: 6px;
 	padding: 7px;
 	width: 470px;
-	border:1px solid #888;
+	border: 1px solid #888;
 	font-size: 12px;
 	font-weight: normal;
 	-webkit-border-radius: 8px;
 	-moz-border-radius: 8px;
 	border-radius: 8px;
 }
+
 legend {
 	padding: 8px;
-	border:1px solid #888;
+	border: 1px solid #888;
 	color: black;
 	font-size: 13px;
 	font-weight: bold;
@@ -23,20 +25,24 @@ legend {
 	-moz-border-radius: 4px;
 	border-radius: 4px;
 }
+
 form {
 	width: 470px;
 }
+
 #table1 {
 	width: 470px;
 	border: none;
 	border-collapse: collapse;
 }
+
 #table1 tr td {
 	width: 117px;
 	padding-bottom: 5px;
 	border: none;
 	font-size: 12px;
 }
+
 #table1 tr td input {
 	width: 115px;
 	font-family: "Arial";
@@ -47,6 +53,7 @@ form {
 	background-color: white;
 	border: 2px inset #cccccc;
 }
+
 #table1 tr td select {
 	width: 115px;
 	height: 20px;
@@ -56,16 +63,18 @@ form {
 	background-color: white;
 	border: 1px solid black;
 }
-#table1 tr td input.uneditable,
-#table2 tr td input.uneditable {
+
+#table1 tr td input.uneditable,#table2 tr td input.uneditable {
 	background-color: #aaa;
 	color: black;
 	border: 2px inset #cccccc;
 }
+
 #table2 {
 	width: 470px;
 	border-collapse: collapse;
 }
+
 #table2 tr th {
 	border: 1px solid #fff;
 	background: #629cd7;
@@ -75,15 +84,19 @@ form {
 	line-height: 19px;
 	font-weight: bold;
 }
+
 #table2 tr td {
 	border: 1px solid #aaa;
 }
+
 #table2 tr td.noBorder {
 	border: none;
 }
+
 #table2 tr td img {
 	cursor: pointer;
 }
+
 #table2 tr td input {
 	width: 104px;
 	font-family: "Arial";
@@ -94,6 +107,7 @@ form {
 	background-color: white;
 	border: 2px inset #cccccc;
 }
+
 input.button {
 	display: inline-block;
 	background-color: #1f9dd1;
@@ -110,10 +124,12 @@ input.button {
 	font-weight: normal;
 	cursor: pointer;
 }
+
 input.button:hover {
 	background: #5f9ad9;
 	color: #ffffff;
 }
+
 div#menuButton {
 	width: 130px;
 	height: 45px;
@@ -130,17 +146,21 @@ div#menuButton {
 	font-family: Arial;
 	cursor: pointer;
 }
+
 div#menuButton:hover {
 	background: #b5b5b5;
 }
+
 h3 {
 	font-family: Arial;
 	font-size: 17px;
 }
+
 #accordion .ui-accordion-header a {
 	font-family: Arial;
 	font-size: 12px;
 }
+
 #accordion .ui-accordion-content {
 	font-family: Arial;
 	font-size: 11px;

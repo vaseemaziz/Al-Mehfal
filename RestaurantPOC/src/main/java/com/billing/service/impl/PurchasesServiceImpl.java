@@ -29,8 +29,8 @@ public class PurchasesServiceImpl implements PurchasesService {
 	
 	
 	@Override
-	public List<Purchases> findPurchases(String fromDate, String toDate, int supplierNum, String rawMaterialId) {
-		return purchasesDao.findPurchases(fromDate, toDate, supplierNum, rawMaterialId);
+	public List<Purchases> findPurchases(String fromDate, String toDate, String supplierNum) {
+		return purchasesDao.findPurchases(fromDate, toDate, supplierNum);
 	}
 	
 	

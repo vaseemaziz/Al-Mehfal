@@ -1,19 +1,19 @@
-body, h1, h2, h3, h4, h5, h6, a, p, ul, ol, li, em, strong, pre, code, form {
+body,h1,h2,h3,h4,h5,h6,a,p,ul,ol,li,em,strong,pre,code,form {
 	padding: 0;
 	margin: 0;
 	border: 0;
 	outline: 0;
 }
 
-.padtop{
+.padtop {
 	padding-top: 15px;
 }
 
-#phone{
+#phone {
 	color: #FFEB00;
 }
 
-html{
+html {
 	height: 100%;
 }
 
@@ -23,7 +23,7 @@ body {
 	line-height: 20px;
 	background: black;
 	height: 100%;
-}	
+}
 
 #wrapper {
 	width: 950px;
@@ -41,7 +41,6 @@ a:hover {
 	color: #c4c4c4;
 }
 
-
 #menu_wrap {
 	width: 240px;
 	display: inline-block;
@@ -57,7 +56,7 @@ a:hover {
 }
 
 #restinfo {
-	text-align:center;
+	text-align: center;
 	padding: 14px 10px 0px 20px;
 }
 
@@ -69,11 +68,10 @@ a:hover {
 #logo h1 a {
 	display: block;
 	width: 220px;
-	height: 190px;	
+	height: 190px;
 	background: url(../images/logo_back.png) no-repeat top left;
 	text-indent: -9999px;
 }
-
 
 #navbar {
 	list-style: none;
@@ -96,7 +94,8 @@ a:hover {
 	display: block;
 	width: 180px;
 	height: 40px;
-	font: bold 18px 'Myriad Pro Cond', 'Myriad Pro', 'Helvetica', 'Verdana', sans-serif;
+	font: bold 18px 'Myriad Pro Cond', 'Myriad Pro', 'Helvetica', 'Verdana',
+		sans-serif;
 	color: #ddd;
 	text-decoration: none;
 	text-transform: uppercase;
@@ -121,20 +120,18 @@ a:hover {
 	background: url(../images/menu_hover_arrow.png) no-repeat top left;
 	position: absolute;
 	top: 10px;
-	left: 150px; 
+	left: 150px;
 }
 
 #navbar li.top_nav:hover {
 	background: url(../images/menu_hover_arrow.png) no-repeat center right;
 }
 
-body.body_home a#home,
-body.body_about a#about {
+body.body_home a#home,body.body_about a#about {
 	color: white;
 }
 
-body.body_home a#home span,
-body.body_about a#about span {
+body.body_home a#home span,body.body_about a#about span {
 	color: #aaaaaa;
 }
 
@@ -207,15 +204,17 @@ span.not_link {
 	display: inline-block;
 	overflow: auto;
 }
- 
+
 .maincontent h2 {
-	font: bold 30px 'Myriad Pro Cond', 'Myriad Pro', 'Helvetica', 'Verdana', sans-serif;
+	font: bold 30px 'Myriad Pro Cond', 'Myriad Pro', 'Helvetica', 'Verdana',
+		sans-serif;
 	text-transform: uppercase;
 	margin: 35px 0 20px 0;
 }
 
 .maincontent h2.section_title {
-	font: bold 30px 'Myriad Pro Cond', 'Myriad Pro', 'Helvetica', 'Verdana', sans-serif;
+	font: bold 30px 'Myriad Pro Cond', 'Myriad Pro', 'Helvetica', 'Verdana',
+		sans-serif;
 	text-transform: uppercase;
 	margin: 19px 0 40px 0;
 }

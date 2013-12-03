@@ -74,14 +74,34 @@ public class DishOrderServiceImpl implements DishOrderService {
 	
 	
 	@Override
-	public void addCustomer(String name, String address, String mobile) {
-		dishOrderDao.addCustomer(name, address, mobile);
+	public boolean addCustomer(String name, String address, String mobile) {
+		return dishOrderDao.addCustomer(name, address, mobile);
 	}
 	
 	
 	@Override
 	public String verifyCustomer(String verifyMobile) {
 		return dishOrderDao.verifyCustomer(verifyMobile);
+	}
+	
+	@Override
+	public List<String[]> getCustomerDetails() {
+		return dishOrderDao.getCustomerDetails();
+	}
+	
+	@Override
+	public void payBill(String mobile, String paidAmount) {
+		dishOrderDao.payBill(mobile, paidAmount);
+	}
+	
+	@Override
+	public List<String[]> getSalesReport1(String toFrom, String toDate) {
+		return dishOrderDao.getSalesReport1(toFrom, toDate);
+	}
+	
+	@Override
+	public List<String[]> getSalesReport2(String fromMonth, String toMonth, String year) {
+		return dishOrderDao.getSalesReport2(fromMonth, toMonth, year);
 	}
 	
 }

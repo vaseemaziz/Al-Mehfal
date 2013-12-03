@@ -21,7 +21,12 @@ public interface DishOrderService {
 	OrderForm openBill(long billNumber);
 	BillFormat printCreditBill(String creditId);
 	
-	void addCustomer(String name, String address, String mobile);
+	boolean addCustomer(String name, String address, String mobile);
 	String verifyCustomer(String verifyMobile);
+	List<String[]> getCustomerDetails();
+	void payBill(String mobile, String paidAmount);
+	
+	List<String[]> getSalesReport1(String toFrom, String toDate);
+	List<String[]> getSalesReport2(String fromMonth, String toMonth, String year);
 	
 }

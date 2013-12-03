@@ -7,7 +7,7 @@ import com.billing.model.RawMaterial;
 public interface RawMaterialDao {
 	
 	void saveRawMaterials(List<RawMaterial> materials);
-	void deleteRawMaterial(String id);
 	List<RawMaterial> getRawMaterials();
+	void editRawMaterial(RawMaterial rawMaterial);
 	
 }

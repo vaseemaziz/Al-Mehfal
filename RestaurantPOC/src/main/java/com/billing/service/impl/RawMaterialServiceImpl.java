@@ -24,14 +24,14 @@ public class RawMaterialServiceImpl implements RawMaterialService {
 	
 	
 	@Override
-	public void deleteRawMaterial(String id) {
-		rawMaterialDao.deleteRawMaterial(id);
-	}
-	
-	
-	@Override
 	public List<RawMaterial> getRawMaterials() {
 		return rawMaterialDao.getRawMaterials();
+	}
+
+
+	@Override
+	public void editRawMaterial(RawMaterial rawMaterial) {
+		rawMaterialDao.editRawMaterial(rawMaterial);
 	}
 	
 }

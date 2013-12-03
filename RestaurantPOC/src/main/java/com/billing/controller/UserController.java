@@ -1,5 +1,6 @@
 package com.billing.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,26 +31,14 @@ public class UserController {
 	private DishOrderService dishOrderService;
 	
 	
-	@RequestMapping(value = "/home" , method = RequestMethod.GET)
-	public String homePage(Model model) {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    	User user = (User) auth.getPrincipal();
-    	
-    	String username = user.getUsername();
-    	model.addAttribute("user", username);
-    	
-    	return "user/home";
-    }
-	
-	
 	@RequestMapping(value = "/sales" , method = RequestMethod.GET)
 	public String salesPage(Model model) {
-		if(model.containsAttribute("billToPrint")) {
-			return "sales";
-		}
-		
+		if(model.containsAttribute("billToPrint"))
+			return "sales/sales";
+
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     	User user = (User) auth.getPrincipal();
+    	
     	List<OrderForm> pendingOrders = dishOrderService.getPendingOrders(user.getUsername());
     	List<Categories> categoriesList = dishOrderService.getDishItems();
     	
@@ -63,23 +52,25 @@ public class UserController {
     	model.addAttribute("dishItems", categoriesList);
     	model.addAttribute("pendingOrders", pendingOrders);
     	
-        return "sales";
+        return "sales/sales";
     }
 	
 	
 	@RequestMapping(value = "/saveOrder", method = RequestMethod.POST)
-    public String saveOrder(@ModelAttribute("orderForm") @Valid OrderForm orderForm, BindingResult result, Model model) {
-		System.out.println(orderForm.getBillType());
-    	if(!orderForm.getSalesType().equalsIgnoreCase("Al-a-Carte"))
+    public String saveOrder(@ModelAttribute("orderForm") @Valid OrderForm orderForm, BindingResult result, RedirectAttributes redirectAttributes) {
+		
+    	if(!orderForm.getSalesType().equals("Al-a-Carte"))
     		orderForm.setTableNum("-");
     	
     	if(result.hasErrors()) {
     		List<FieldError> list = result.getFieldErrors();
-    		String errors = "";
+    		List<String> errors = new ArrayList<String>();
     		for (FieldError fieldError : list)
-				errors += fieldError.getField() + " : " + fieldError.getDefaultMessage() + "\n";
+				errors.add(fieldError.getField() + " : " + fieldError.getDefaultMessage());
     		
     		System.out.println(errors);
+    		redirectAttributes.addFlashAttribute("errors", errors);
+    		return "redirect:/user/sales";
     	}
     	
     	dishOrderService.saveOrder(orderForm);
@@ -96,37 +87,41 @@ public class UserController {
 	
     @RequestMapping(value = "/printOrder", method = RequestMethod.POST)
     public String printOrder(@ModelAttribute("orderForm") @Valid OrderForm orderForm, BindingResult result, 
-    		Model model, RedirectAttributes redirectAttrs) {
-    	if(!orderForm.getSalesType().equalsIgnoreCase("Al-a-Carte"))
+    		Model model, RedirectAttributes redirectAttributes) {
+    	if(!orderForm.getSalesType().equals("Al-a-Carte"))
     		orderForm.setTableNum("-");
     	
     	if(result.hasErrors()) {
     		List<FieldError> list = result.getFieldErrors();
-    		String errors = "";
+    		List<String> errors = new ArrayList<String>();
     		for (FieldError fieldError : list)
-				errors += fieldError.getField() + " : " + fieldError.getDefaultMessage() + "\n";
+				errors.add(fieldError.getField() + " : " + fieldError.getDefaultMessage());
     		
     		System.out.println(errors);
+    		redirectAttributes.addFlashAttribute("errors", errors);
+    		return "redirect:/user/sales";
     	}
     	
     	dishOrderService.closeOrder(orderForm);
-    	redirectAttrs.addFlashAttribute("billToPrint", true);
-		redirectAttrs.addFlashAttribute("orderForm", orderForm);
+    	redirectAttributes.addFlashAttribute("billToPrint", true);
+		redirectAttributes.addFlashAttribute("orderForm", orderForm);
     	return "redirect:/user/sales";
     }
+    
     
     @RequestMapping(value="/printBill", method=RequestMethod.GET)
     public String printBill(@RequestParam("billNum") String billNum, Model model) {
     	OrderForm orderForm= dishOrderService.openBill(Long.parseLong(billNum));
     	model.addAttribute("orderForm", orderForm);
-    	return "printBill";
+    	return "sales/printBill";
     }
+    
     
     @RequestMapping(value="/printCreditBill", method=RequestMethod.GET)
     public String printCreditBill(@RequestParam("creditId") String creditId, Model model) {
     	BillFormat billFormat = dishOrderService.printCreditBill(creditId);
     	model.addAttribute("billFormat", billFormat);
-    	return "printCreditBill";
+    	return "sales/printCreditBill";
     }
     
     
@@ -146,8 +141,11 @@ public class UserController {
 		@RequestParam(value="address", required=true) String address,
 		@RequestParam(value="mobile", required=true) String mobile) {
 		
-		dishOrderService.addCustomer(name, address, mobile);
-		return "Successfully Added";
+    	boolean b = dishOrderService.addCustomer(name, address, mobile);
+    	if(b)
+    		return "{\"msg\":\"Successfully Added\"}";
+    	else
+    		return "{\"error\":\"Already Customer Exists\"}";
 	}
 	
 	
@@ -156,9 +154,12 @@ public class UserController {
 		@RequestParam(value="verifyMobile", required=true) String verifyMobile) {
 		
 		String name = dishOrderService.verifyCustomer(verifyMobile);
-		if(name=="")
-			return "No record found";
-		return name;
+		if(name=="none")
+			return "{\"error\":\"No record found\"}";
+		
+		BillFormat billFormat = dishOrderService.printCreditBill(verifyMobile);
+		double due = billFormat.getTotalBill() - billFormat.getTotalPaidBill();
+		return "{\"name\":\"" + name + "\",\"due\":\"" + due + "\"}";
 	}
 	
 }

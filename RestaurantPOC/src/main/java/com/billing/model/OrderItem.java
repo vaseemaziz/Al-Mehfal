@@ -1,17 +1,19 @@
 package com.billing.model;
 
+import javax.validation.constraints.Digits;
 import javax.validation.constraints.Min;
 import org.hibernate.validator.constraints.NotBlank;
 
 
 public class OrderItem {
 	
-	@NotBlank(message="Menu Item: This field is required")
+	@NotBlank(message="Menu item should not be empty")
 	private String itemName;
 	
-	@Min(value=1)
+	@Min(value=1, message="Quantity must be greater than 1")
 	private int quantity;
 	
+	@Digits(integer=12, fraction=2)
 	private double itemCost;
 	
 	

@@ -5,7 +5,7 @@
 	<c:set var="role" value="user"></c:set>
 </sec:authorize>
 <sec:authorize ifAnyGranted="ROLE_MANAGER">
-	<c:set var="role" value="manager" ></c:set>
+	<c:set var="role" value="manager"></c:set>
 </sec:authorize>
 <sec:authorize ifAnyGranted="ROLE_ADMIN">
 	<c:set var="role" value="admin"></c:set>
@@ -15,7 +15,12 @@
 	<head>
 		<title>ExpensesPage - Al Mehfal Restaurant</title>
 		<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-		<link rel="stylesheet" href="web/css/common.css" type="text/css" media="screen" />
+		<link rel="stylesheet" href="web/css/common.css" type="text/css" />
+		<link href="web/css/jquery.validation.css" rel="stylesheet" type="text/css" />
+		
+		<script type="text/javascript" src="web/js/jquery.min.js"></script>
+		<script src="web/js/jquery.validation.js" type="text/javascript"></script>
+		<script src="web/js/jquery.validation-en.js" type="text/javascript"></script>
 		
 		<style type="text/css">
 			th {
@@ -42,6 +47,9 @@
 				background-color: #aaa;
 				color: black;
 				border: 2px inset #cccccc;
+			}
+			table img {
+				cursor: pointer;
 			}
 			#cols1 {
 				width: 40px;
@@ -74,30 +82,6 @@
 				width: 90px;
 			}
 		</style>
-		
-		<script type="text/javascript" src="web/js/jquery.min.js"></script>
-		<script src="web/js/jquery.validation.js" type="text/javascript"></script>
-		<script src="web/js/jquery.validation-en.js" type="text/javascript"></script>
-		
-		<script type="text/javascript">
-			$(document).ready(function(){
-				$(document).on("keyup", "table tr:eq(-2) td input", function(){
-					var index = $("table tr").length - 2;
-					$('<tr>' + 
-							'<td id="cols1"> <input class="uneditable" type="text" name="expenses['+index+'].expId" readonly /> </td>' +
-							'<td id="cols2"> <input type="text" name="expenses['+index+'].expHead" /> </td>' +
-							'<td id="cols3"> <input type="text" name="expenses['+index+'].expSubHead" /> </td>' +
-							'<td id="cols4"> <input type="text" name="expenses['+index+'].expDetails" /> </td>' +
-							'<td id="cols5"> <input type="text" name="expenses['+index+'].expAmount" /> </td>' +
-							'<td id="cols6"> <input type="text" name="expenses['+index+'].expDate" /> </td>' +
-							'<td id="cols7"> <input class="uneditable" type="text" name="expenses['+index+'].createdBy" readonly /> </td>' +
-							'<td id="cols8"> <input class="uneditable" type="text" name="expenses['+index+'].createdOn" readonly /> </td>' +
-							'<td id="cols9"> <input class="uneditable" type="text" name="expenses['+index+'].lastUpdatedOn" readonly /> </td>' +
-							'<td id="cols10"> <input class="uneditable" type="text" name="expenses['+index+'].lastUpdatedBy" readonly /> </td>' + 
-					'</tr>').insertAfter($("table tr:eq(-2)"));
-				});
-			});
-		</script>
 	</head>
 
 	<body>
@@ -110,50 +94,169 @@
 					</jsp:include>
 				</div>
 			</div>
-
+	
 			<div class="content_2columns">
-				<form method="post" action='<c:url value="/${role}/saveExpenses" />' name="expenses">
-					<h1> Daily Expenses Sheet</h1>
-					<table style="width:900px;">
+				<form method="post" action='<c:url value="/${role}/saveExpenses" />'
+					id="expenses" name="expenses">
+					<h1>Daily Expenses Sheet</h1>
+					<br />
+					<table style="width: 900px;">
 						<tr>
-							<th id="cols1"> Exp. ID </th>
-							<th id="cols2"> Exp.Head </th>
-							<th id="cols3"> Exp.Sub Head </th>
-							<th id="cols4"> Expense Details </th>
-							<th id="cols5"> Exp. Amount </th>
-							<th id="cols6"> Expense Date </th>
-							<th id="cols7"> Created On </th>
-							<th id="cols8"> Created By </th>
-							<th id="cols9"> Last<br />Updated On </th>
-							<th id="cols10"> Last<br />Updated By </th>
+							<td colspan="10" align="right">
+								<a id="addRow" href="javascript:void(0)">Add Row</a> &nbsp; &nbsp;
+								<a href='<c:url value="/${role}/viewExpenses" />'> View Expenses </a>
+							</td>
 						</tr>
 						<tr>
-							<td id="cols1"> <input class="uneditable" type="text" name="expenses[0].expId" readonly /> </td>
-							<td id="cols2"> <input type="text" name="expenses[0].expHead" /> </td>
-							<td id="cols3"> <input type="text" name="expenses[0].expSubHead" /> </td>
-							<td id="cols4"> <input type="text" name="expenses[0].expDetails" /> </td>
-							<td id="cols5"> <input type="text" name="expenses[0].expAmount" /> </td>
-							<td id="cols6"> <input type="text" name="expenses[0].expDate" /> </td>
-							<td id="cols7"> <input class="uneditable" type="text" name="expenses[0].createdBy" readonly /> </td>
-							<td id="cols8"> <input class="uneditable" type="text" name="expenses[0].createdOn" readonly /> </td>
-							<td id="cols9"> <input class="uneditable" type="text" name="expenses[0].lastUpdatedOn" readonly /> </td>
-							<td id="cols10"> <input class="uneditable" type="text" name="expenses[0].lastUpdatedBy" readonly /> </td>
+							<th id="cols2">Exp.Head</th>
+							<th id="cols3">Exp.Sub Head</th>
+							<th id="cols4">Expense Details</th>
+							<th id="cols5">Exp. Amount</th>
+							<th id="cols6">Expense Date</th>
+							<th id="cols7">Created On</th>
+							<th id="cols8">Created By</th>
+							<th id="cols1"></th>
 						</tr>
 						<tr>
-							<td colspan="10" align="center">
-								<br /><input type="submit" value="Submit" class="btn" />
+							<td id="cols2">
+								<input class="validate[required]" type="text"
+									name="expenses[0].expHead" /></td>
+							<td id="cols3">
+								<input class="validate[required]" type="text"
+									name="expenses[0].expSubHead" /></td>
+							<td id="cols4">
+								<input class="validate[required]" type="text"
+									name="expenses[0].expDetails" /></td>
+							<td id="cols5">
+								<input class="validate[required,custom[number]]" type="text"
+									name="expenses[0].expAmount" /></td>
+							<td id="cols6">
+								<input class="validate[required,custom[date]]"
+									id="date1" type="text" name="expenses[0].expDate" /></td>
+							<td id="cols7">
+								<input class="uneditable" type="text" value="${user}"
+									name="expenses[0].createdBy" readonly /></td>
+							<td id="cols8">
+								<input class="uneditable" type="text" value="${user}"
+									name="expenses[0].createdOn" readonly /></td>
+							<td id="cols1">
+								&nbsp; <img src="web/images/delete.png" width="20px" height="20px" />
+							</td>
+						</tr>
+						<tr>
+							<td colspan="8" align="center"><br />
+								<input type="submit" value="Submit" class="btn" />
 							</td>
 					</table>
 				</form>
 			</div>
-			<br />
 			<div id="footer">
 				<div id="footer_info">
-					<p class="copyright">&copy; 2013, Al Mehfal Restaurant, All Rights Reserved</p>
+					<p class="copyright">&copy; 2013, Al Mehfal Restaurant, All
+						Rights Reserved</p>
 				</div>
 			</div>
-			
-			<br />
 		</div>
+
+		<script type="text/javascript">
+			$(document).ready(function() {
+				$("ul.nav").find('li').eq(3).attr('class','current');
+				
+				$(document).on("click", "table img", function(event) {
+					var rowIndex = $('table tr').length - 4;
+					if (rowIndex <= 0) {
+						alert("Must contain atleast expenses details");
+					} else {
+						var removeConfirm = confirm("Are you sure do you want to remove?");
+						if (removeConfirm == true) {
+							var row = $(this).parent().parent();
+							row.remove();
+						}
+					}
+				});
+				
+
+				$(document).on("keyup", "table tr:eq(-2) td input", function() {
+					var index = $("table tr").length - 3;
+					$('<tr>'
+						+ '<td id="cols2"> <input class="validate[required]" type="text" name="expenses['+index+'].expHead" /> </td>'
+						+ '<td id="cols3"> <input class="validate[required]" type="text" name="expenses['+index+'].expSubHead" /> </td>'
+						+ '<td id="cols4"> <input class="validate[required]" type="text" name="expenses['+index+'].expDetails" /> </td>'
+						+ '<td id="cols5"> <input class="validate[required,custom[number]]" type="text" name="expenses['+index+'].expAmount" /> </td>'
+						+ '<td id="cols6"> <input class="validate[required,custom[date]]" type="text" id="date1" name="expenses['+index+'].expDate" /> </td>'
+						+ '<td id="cols7"> <input class="uneditable" type="text" name="expenses['+index+'].createdBy" value="${user}" readonly /> </td>'
+						+ '<td id="cols8"> <input class="uneditable" type="text" name="expenses['+index+'].createdOn" value="${user}" readonly /> </td>'
+						+ '<td id="cols1"> &nbsp; <img src="web/images/delete.png" width="20px" height="20px" /> </td>'
+					+ '</tr>').insertAfter($("table tr:eq(-2)"));
+				});
+
+				$("#addRow").click(function() {
+					var index = $("table tr").length - 3;
+					$('<tr>'
+						+ '<td id="cols2"> <input class="validate[required]" type="text" name="expenses['+index+'].expHead" /> </td>'
+						+ '<td id="cols3"> <input class="validate[required]" type="text" name="expenses['+index+'].expSubHead" /> </td>'
+						+ '<td id="cols4"> <input class="validate[required]" type="text" name="expenses['+index+'].expDetails" /> </td>'
+						+ '<td id="cols5"> <input class="validate[required,custom[number]]" type="text" name="expenses['+index+'].expAmount" /> </td>'
+						+ '<td id="cols6"> <input class="validate[required,custom[date]]" type="text" id="date1" name="expenses['+index+'].expDate" /> </td>'
+						+ '<td id="cols7"> <input class="uneditable" type="text" name="expenses['+index+'].createdBy" value="${user}" readonly /> </td>'
+						+ '<td id="cols8"> <input class="uneditable" type="text" name="expenses['+index+'].createdOn" value="${user}" readonly /> </td>'
+						+ '<td id="cols1"> &nbsp; <img src="web/images/delete.png" width="20px" height="20px" /> </td>'
+					+ '</tr>').insertAfter($("table tr:eq(-2)"));
+				});
+
+				$("#expenses").validationEngine('attach',{
+					onValidationComplete : function(form, status) {
+						if (status == true) {
+							if ($('table tr').length < 4) {
+								alert("There should be atleast raw material");
+								return false;
+							}
+							var count = $('table tr').length;
+							$('table tr').each(function(index) {
+								if (index >= 2 && index < (count - 1)) {
+									var one = $(this).find("td").eq(0).find('input').eq(0);
+									var newName = one.attr('name').replace(/\[[0-9]+\]/i,'['+ (index - 2)+ ']');
+									one.attr('name',newName);
+
+									one = $(this).find("td").eq(1).find('input').eq(0);
+									newName = one.attr('name').replace(/\[[0-9]+\]/i,'['+ (index - 2)+ ']');
+									one.attr('name',newName);
+
+									one = $(this).find("td").eq(2).find('input').eq(0);
+									newName = one.attr('name').replace(/\[[0-9]+\]/i,'['+ (index - 2)+ ']');
+									one.attr('name',newName);
+
+									one = $(this).find("td").eq(3).find('input').eq(0);
+									newName = one.attr('name').replace(/\[[0-9]+\]/i,'['+ (index - 2)+ ']');
+									one.attr('name',newName);
+
+									one = $(this).find("td").eq(4).find('input').eq(0);
+									newName = one.attr('name').replace(/\[[0-9]+\]/i,'['+ (index - 2)+ ']');
+									one.attr('name',newName);
+
+									one = $(this).find("td").eq(5).find('input').eq(0);
+									newName = one.attr('name').replace(/\[[0-9]+\]/i,'['+ (index - 2)+ ']');
+									one.attr('name',newName);
+
+									one = $(this).find("td").eq(6).find('input').eq(0);
+									newName = one.attr('name').replace(/\[[0-9]+\]/i,'['+ (index - 2)+ ']');
+									one.attr('name',newName);
+
+									one = $(this).find("td").eq(7).find('input').eq(0);
+									newName = one.attr('name').replace(/\[[0-9]+\]/i,'['+ (index - 2)+ ']');
+									one.attr('name',newName);
+
+									one = $(this).find("td").eq(8).find('input').eq(0);
+									newName = one.attr('name').replace(/\[[0-9]+\]/i,'['+ (index - 2)+ ']');
+									one.attr('name',newName);
+								}
+							});
+							return true;
+						}
+						return false;
+					}
+				});
+			});
+		</script>
 	</body>
 </html>

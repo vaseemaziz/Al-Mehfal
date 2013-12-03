@@ -1,10 +1,12 @@
 package com.billing.model;
 
 import java.util.List;
+import javax.validation.Valid;
 
 
 public class ExpensesList {
 	
+	@Valid
 	private List<Expenses> expenses;
 	
 	

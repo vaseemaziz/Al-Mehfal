@@ -1,27 +1,33 @@
 package com.billing.model;
 
+import org.hibernate.validator.constraints.NotBlank;
+
 
 public class Expenses {
 	
-	private int expId;
+	@NotBlank
 	private String expHead;
+	
+	@NotBlank
 	private String expSubHead;
+	
+	@NotBlank
 	private String expDetails;
+	
+	@NotBlank
 	private double expAmount;
+	
+	@NotBlank
 	private String expDate;
+	
+	@NotBlank
 	private String createdBy;
+	
+	@NotBlank
 	private String createdOn;
+	
 	private String lastUpdatedOn;
 	private String lastUpdatedBy;
-	
-	
-	public int getExpId() {
-		return expId;
-	}
-	
-	public void setExpId(int expId) {
-		this.expId = expId;
-	}
 	
 	
 	public String getExpHead() {

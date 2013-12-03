@@ -1,12 +1,14 @@
 package com.billing.model;
 
 import java.util.List;
+
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 
 public class RawMaterialList {
 	
-	@Valid
+	@NotNull @Valid
 	private List<RawMaterial> materials;
 	
 	
