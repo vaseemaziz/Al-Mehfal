@@ -87,7 +87,7 @@ a:hover {
 
 .nav .current a {
 	color: #00a2e8;
-	cursor: default
+	cursor: pointer;
 }
 
 .content_2columns {

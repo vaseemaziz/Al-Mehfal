@@ -55,6 +55,7 @@
 						<th> Address </th>
 						<th> Due </th>
 						<th></th>
+						<th></th>
 					</tr></thead>
 					<tbody>
 						<c:forEach items="${list}" var="array">
@@ -63,6 +64,7 @@
 									<td> ${item} </td>
 								</c:forEach>
 								<td> <div class="btn" id="pay"> Pay </div> </td>
+								<td> <a class="btn" target="_blank" href='<c:url value="/${role}/printCreditBill" />?creditId=${array[1]}'>Bill Receipt</a> </td>
 							</tr>
 						</c:forEach>
 					</tbody>

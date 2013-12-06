@@ -18,7 +18,7 @@
 --
 -- Current Database: `restaurant`
 --
-
+DROP DATABASE `restaurant`;
 CREATE DATABASE /*!32312 IF NOT EXISTS*/ `restaurant` /*!40100 DEFAULT CHARACTER SET latin1 */;
 
 USE `restaurant`;
@@ -45,7 +45,6 @@ CREATE TABLE `credit_details` (
 
 LOCK TABLES `credit_details` WRITE;
 /*!40000 ALTER TABLE `credit_details` DISABLE KEYS */;
-INSERT INTO `credit_details` VALUES (0,'8099035353',0.00,50.00,'2013-12-03 12:28:10'),(1,'8099035353',150.00,0.00,'2013-12-03 07:02:39'),(2,'8099035353',25.00,75.00,'2013-12-03 07:03:41');
 /*!40000 ALTER TABLE `credit_details` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -65,7 +64,7 @@ CREATE TABLE `customer` (
   `created_on` varchar(20) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `mobile` (`mobile`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -74,7 +73,6 @@ CREATE TABLE `customer` (
 
 LOCK TABLES `customer` WRITE;
 /*!40000 ALTER TABLE `customer` DISABLE KEYS */;
-INSERT INTO `customer` VALUES (1,'Raviteja','Hyd','8099035353','murali','2013-12-03 12:32:38');
 /*!40000 ALTER TABLE `customer` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -173,7 +171,6 @@ CREATE TABLE `dish_orders` (
 
 LOCK TABLES `dish_orders` WRITE;
 /*!40000 ALTER TABLE `dish_orders` DISABLE KEYS */;
-INSERT INTO `dish_orders` VALUES (1,' Palak Pakoda ',5,5.00),(1,' Veg Pakoda ',5,5.00),(1,' Chicken Biryani ',5,13.00),(1,' Bag Rice Dalcha ',5,7.00),(2,' Palak Pakoda ',2,5.00),(2,' Veg Pakoda ',3,5.00),(3,' Palak Pakoda ',2,5.00);
 /*!40000 ALTER TABLE `dish_orders` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -217,7 +214,7 @@ CREATE TABLE `employee_master` (
   UNIQUE KEY `international_contact_no` (`international_contact_no`),
   UNIQUE KEY `bank_account_no` (`bank_account_no`),
   UNIQUE KEY `loginid` (`loginid`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -226,6 +223,7 @@ CREATE TABLE `employee_master` (
 
 LOCK TABLES `employee_master` WRITE;
 /*!40000 ALTER TABLE `employee_master` DISABLE KEYS */;
+INSERT INTO `employee_master` VALUES (1,'Murali','Male','1987-12-12','2012-02-12','','','','','1234567890','','','','','','','','','','',1000.00,'','','','murali'),(2,'John','Male','1990-02-10','2012-02-12','-','','-','','2345678901','234123','','','','','','','','','123',1000.00,'','','','john'),(3,'James','Male','1980-08-20','2011-07-19','--','','--','','3456789012','2341235','','','','','','','','','1232',1000.00,'','','','admin');
 /*!40000 ALTER TABLE `employee_master` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -282,7 +280,7 @@ CREATE TABLE `employees` (
 
 LOCK TABLES `employees` WRITE;
 /*!40000 ALTER TABLE `employees` DISABLE KEYS */;
-INSERT INTO `employees` VALUES ('james','james','ROLE_ADMIN'),('john','john','ROLE_USER'),('murali','murali','ROLE_MANAGER'),('pranay','pranay','ROLE_USER'),('rana','rana','ROLE_MANAGER'),('vaseem','vaseem','ROLE_MANAGER');
+INSERT INTO `employees` VALUES ('admin','admin','ROLE_ADMIN'),('john','john','ROLE_USER'),('murali','murali','ROLE_MANAGER');
 /*!40000 ALTER TABLE `employees` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -305,7 +303,7 @@ CREATE TABLE `expenses` (
   `last_updated_on` varchar(20) NOT NULL,
   `last_updated_by` varchar(20) NOT NULL,
   PRIMARY KEY (`exp_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -336,7 +334,7 @@ CREATE TABLE `orders` (
   `bill_type` varchar(10) DEFAULT 'cash',
   `bill_status` varchar(10) DEFAULT 'pending',
   PRIMARY KEY (`bill_number`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -345,7 +343,6 @@ CREATE TABLE `orders` (
 
 LOCK TABLES `orders` WRITE;
 /*!40000 ALTER TABLE `orders` DISABLE KEYS */;
-INSERT INTO `orders` VALUES (1,'2013-12-03 07:01:51',150.00,0.00,150.00,'murali','Al-a-Carte','T01','Credit','completed'),(2,'2013-12-03 07:02:57',25.00,0.00,25.00,'murali','Al-a-Carte','T01','Credit','completed'),(3,'2013-12-03 07:08:10',10.00,0.00,10.00,'murali','Al-a-Carte','T01','Cash','completed');
 /*!40000 ALTER TABLE `orders` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -428,7 +425,6 @@ CREATE TABLE `raw_materials` (
 
 LOCK TABLES `raw_materials` WRITE;
 /*!40000 ALTER TABLE `raw_materials` DISABLE KEYS */;
-INSERT INTO `raw_materials` VALUES ('Spices','Chilli Powder','KG',1);
 /*!40000 ALTER TABLE `raw_materials` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -477,4 +473,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2013-12-03 22:53:52
+-- Dump completed on 2013-12-07 14:13:22

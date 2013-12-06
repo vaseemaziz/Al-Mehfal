@@ -82,6 +82,9 @@
 						<li class="current">
 							<a href='<c:url value="/${role}/purchases" />'> Purchases </a>
 						</li>
+						<li>
+							<a href='<c:url value="/${role}/expenses" />'> Expenses </a>
+						</li>
 					</ul>
 				</div>
 				<div id="rightPan">
@@ -90,8 +93,15 @@
 							id="date1" style="width: 100px" readonly />
 						&nbsp; &nbsp; To Date : <input type="text" value="${toDate}" name="toDate"
 							id="date2" style="width: 100px" readonly />
-						&nbsp; &nbsp; Supplier No : <input type="text" value="${sNum}"
-							name="sNum" style="width: 100px" readonly />
+						&nbsp; &nbsp; Supplier No : <select name="sNum" id="sNum">
+							<option> </option>
+							<c:forEach items="${suppliersList}" var="data">
+								<option>${data.supplierNum}</option>
+							</c:forEach>
+						</select>
+						<script type="text/javascript">
+							$("#sNum").val('${sNum}');
+						</script>
 						&nbsp; &nbsp; <input type="submit" value=" Find " />
 					</form>
 					<br /> <br />

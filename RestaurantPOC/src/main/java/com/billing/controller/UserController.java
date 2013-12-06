@@ -1,8 +1,12 @@
 package com.billing.controller;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Properties;
+
 import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import com.billing.model.BillFormat;
 import com.billing.model.Categories;
 import com.billing.model.OrderForm;
@@ -48,6 +53,22 @@ public class UserController {
     		model.addAttribute("orderForm", orderForm);
     	}
 		
+    	Calendar cal = Calendar.getInstance();
+    	int month = cal.get(Calendar.MONTH)+1;
+    	int year = cal.get(Calendar.YEAR);
+    	int daysInMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+    	String str = getSalesByMonth1(month, year);
+    	
+    	String days = "[";
+    	for(int i=0;i<daysInMonth;i++)
+    		days += (i+1) + ",";
+    	days = days.substring(0,days.length()-1) + "]";
+    	
+    	model.addAttribute("month", month);
+    	model.addAttribute("year", year);
+    	model.addAttribute("sales", str);
+    	model.addAttribute("days", days);
+    	
     	model.addAttribute("billToPrint", false);
     	model.addAttribute("dishItems", categoriesList);
     	model.addAttribute("pendingOrders", pendingOrders);
@@ -153,13 +174,105 @@ public class UserController {
 	public @ResponseBody String verifyCustomer(
 		@RequestParam(value="verifyMobile", required=true) String verifyMobile) {
 		
-		String name = dishOrderService.verifyCustomer(verifyMobile);
-		if(name=="none")
+		String[] str = dishOrderService.verifyCustomer(verifyMobile);
+		if(str==null)
 			return "{\"error\":\"No record found\"}";
 		
-		BillFormat billFormat = dishOrderService.printCreditBill(verifyMobile);
-		double due = billFormat.getTotalBill() - billFormat.getTotalPaidBill();
-		return "{\"name\":\"" + name + "\",\"due\":\"" + due + "\"}";
+		return "{\"name\":\"" + str[0] + "\",\"due\":\"" + str[1] + "\"}";
+	}
+	
+	
+	@RequestMapping(value="/creditDetails", method=RequestMethod.GET)
+	public String creditDetails(Model model) {
+		List<String[]> str = dishOrderService.getCustomerDetails();
+		model.addAttribute("list", str);
+		return "sales/credit";
+	}
+	
+	@RequestMapping(value="/payBill", method=RequestMethod.POST)
+	public String payBill(Model model,
+		@RequestParam(value="mobile", required=true) String mobile,
+		@RequestParam(value="paidAmount", required=true) String paidAmount) {
+		
+		mobile = mobile.trim();
+		paidAmount = paidAmount.trim();
+		
+    	dishOrderService.payBill(mobile, paidAmount);
+    	model.addAttribute("url", "/user/creditDetails");
+		model.addAttribute("message", "Bill Updated");
+		return "success";
+	}
+	
+	
+	@RequestMapping(value="/salesByMonth", method=RequestMethod.GET)
+	public @ResponseBody String getSalesByMonth(@RequestParam(value="month", required=true) String month, 
+			@RequestParam(value="year", required=true) String year, Model model) {
+		
+		int m = Integer.parseInt(month);
+		int y = Integer.parseInt(year);
+		
+		if(m == 0) {
+			String str1 = getSalesByYear1(y);
+			String days1 = "[\"Jan\", \"Feb\", \"Mar\", \"Apr\", \"May\", \"June\", \"July\", \"Aug\", \"Sept\", \"Oct\", \"Nov\", \"Dec\"]";
+			
+			return "{\"sales\":" + str1 + ",\"days\":" + days1 + "}";
+		}
+		
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.MONTH, m-1);
+		int daysInMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+		
+		String str = getSalesByMonth1(m, y);
+		
+		String days = "[";
+    	for(int i=0;i<daysInMonth;i++)
+    		days += (i+1) + ",";
+    	days = days.substring(0,days.length()-1) + "]";
+		
+		return "{\"sales\":" + str + ",\"days\":" + days + "}";
+	}
+	
+	private String getSalesByMonth1(int month, int year) {
+		
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.MONTH, month-1);
+		cal.set(Calendar.YEAR, year);
+		
+		int daysInMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+		Properties prop = dishOrderService.getSalesByMonth(month, year);
+		String str = "[";
+		
+		for(int i=0; i<daysInMonth; i++) {
+			String key = "" + (i+1);
+			String value = prop.getProperty(key);
+			
+			if(value==null)
+				str += "0,";
+			else
+				str += value + ",";
+		}
+		
+		str = str.substring(0, str.length()-1) + "]";
+		return str;
+	}
+	
+	private String getSalesByYear1(int year) {
+		
+		Properties prop = dishOrderService.getSalesByYear(year);
+		String str = "[";
+		
+		for(int i=0; i<12; i++) {
+			String key = "" + (i+1);
+			String value = prop.getProperty(key);
+			
+			if(value==null)
+				str += "0,";
+			else
+				str += value + ",";
+		}
+		
+		str = str.substring(0, str.length()-1) + "]";
+		return str;
 	}
 	
 }

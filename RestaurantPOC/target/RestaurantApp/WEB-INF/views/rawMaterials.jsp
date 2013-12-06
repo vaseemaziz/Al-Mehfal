@@ -142,7 +142,8 @@
 									return true;
 								}
 								return false;
-							}
+							},
+							showOneMessage: true
 						});
 					});
 				</script>
@@ -193,6 +194,9 @@
 						</li>
 						<li>
 							<a href='<c:url value="/${role}/purchases" />'> Purchases </a>
+						</li>
+						<li>
+							<a href='<c:url value="/${role}/expenses" />'> Expenses </a>
 						</li>
 					</ul>
 				</div>

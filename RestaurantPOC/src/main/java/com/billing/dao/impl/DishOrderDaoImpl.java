@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
@@ -176,8 +177,10 @@ public class DishOrderDaoImpl implements DishOrderDao {
 		});
 		
 		if(billStatus.equals("completed") && orderForm.getBillType().toLowerCase().equals("credit")) {
+			if(orderForm.getPaidAmount().equals(""))
+	    		orderForm.setPaidAmount("0");
 			String creditUpdateQuery = "insert into credit_details(bill_number, customer_id, due_amount, paid_amount) values(?,?,?,?)";
-			jdbcTemplate.update(creditUpdateQuery, new Object[]{orderForm.getBillNum(), orderForm.getCreditId(), orderForm.getBillNetAmount(), orderForm.getPaidAmount()});
+			jdbcTemplate.update(creditUpdateQuery, new Object[]{orderForm.getBillNum(), orderForm.getCreditId(), orderForm.getBillNetAmount(), Double.parseDouble(orderForm.getPaidAmount())});
 		}
 	}
 	
@@ -205,7 +208,7 @@ public class DishOrderDaoImpl implements DishOrderDao {
 		billFormat.setMobile(creditId);
 		final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		
-		String query = "select bill_number from credit_details where customer_id=?";
+		String query = "select bill_number from credit_details where customer_id=? and bill_number > 0";
 		final List<Long> billNums = jdbcTemplate.query(query, new Object[]{creditId}, new RowMapper<Long>() {
 			@Override
 			public Long mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -256,8 +259,8 @@ public class DishOrderDaoImpl implements DishOrderDao {
 			bills.add(orderForm);
 		}
 		
-		String paidAmountQuery = "select paid_amount, date from credit_details where paid_amount > 0";
-		List<String[]> paidBills = jdbcTemplate.query(paidAmountQuery, new RowMapper<String[]>(){
+		String paidAmountQuery = "select paid_amount, date from credit_details where customer_id=? and paid_amount > 0";
+		List<String[]> paidBills = jdbcTemplate.query(paidAmountQuery, new Object[]{creditId}, new RowMapper<String[]>(){
 			@Override
 			public String[] mapRow(ResultSet rs, int row) throws SQLException {
 				String[] str = new String[2];
@@ -345,17 +348,20 @@ public class DishOrderDaoImpl implements DishOrderDao {
 	
 	
 	@Override
-	public String verifyCustomer(String verifyMobile) {
-		String verifyQuery = "select name from customer where mobile=?";
-		List<String> list = jdbcTemplate.query(verifyQuery, new Object[]{verifyMobile}, new RowMapper<String>() {
+	public String[] verifyCustomer(String verifyMobile) {
+		String verifyQuery = "select c1.name as 'name', sum(c2.due_amount)-sum(c2.paid_amount) as 'due_amount' from customer c1, credit_details c2 where c1.mobile=? group by c1.name;";
+		List<String[]> list = jdbcTemplate.query(verifyQuery, new Object[]{verifyMobile}, new RowMapper<String[]>() {
 			@Override
-			public String mapRow(ResultSet rs, int row) throws SQLException {
-				return rs.getString("name");
+			public String[] mapRow(ResultSet rs, int row) throws SQLException {
+				String[] str = new String[2];
+				str[0] = rs.getString("name");
+				str[1] = rs.getString("due_amount");
+				return str;
 			}
 		});
 		
 		if(list.size()==0)
-			return "none";
+			return null;
 		return list.get(0);
 	}
 	
@@ -394,8 +400,10 @@ public class DishOrderDaoImpl implements DishOrderDao {
 
 	@Override
 	public void payBill(String mobile, String paidAmount) {
+		double amt = Double.parseDouble(paidAmount);
+		
 		String payBillQuery = "insert into credit_details(bill_number, customer_id, due_amount, paid_amount) values(?,?,?,?)";
-		jdbcTemplate.update(payBillQuery, new Object[]{0,mobile,0,paidAmount});
+		jdbcTemplate.update(payBillQuery, new Object[]{0,mobile,0,amt});
 	}
 	
 	@Override
@@ -430,6 +438,46 @@ public class DishOrderDaoImpl implements DishOrderDao {
 			}
 		});
 		return list;
+	}
+
+
+	@Override
+	public Properties getSalesByMonth(int month, int year) {
+		String getSalesByMonthQuery = "select day(bill_date) as 'day', count(*) as 'sales' from orders where month(bill_date)=? and year(bill_date)=? group by day";
+		final Properties prop = new Properties();
+		jdbcTemplate.query(getSalesByMonthQuery, new Object[]{month, year}, new RowMapper<String>(){
+			
+			@Override
+			public String mapRow(ResultSet rs, int row) throws SQLException {
+				if(rs.getString("day")==null)
+					prop.put("0", "0");
+				else
+					prop.put(rs.getString("day"),rs.getString("sales"));
+				return null;
+			}
+			
+		});
+		return prop;
+	}
+
+
+	@Override
+	public Properties getSalesByYear(int year) {
+		String getSalesByMonthQuery = "select month(bill_date) as 'month', count(bill_date) as 'sales' from orders where year(bill_date)=? group by month";
+		final Properties prop = new Properties();
+		jdbcTemplate.query(getSalesByMonthQuery, new Object[]{year}, new RowMapper<String>(){
+			
+			@Override
+			public String mapRow(ResultSet rs, int row) throws SQLException {
+				if(rs.getString("month")==null)
+					prop.put("0", "0");
+				else
+					prop.put(rs.getString("month"),rs.getString("sales"));
+				return null;
+			}
+			
+		});
+		return prop;
 	}
 		
 }

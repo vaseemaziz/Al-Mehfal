@@ -142,11 +142,14 @@
 						<li class="current">
 							<a href='<c:url value="/${role}/purchases" />'> Purchases </a>
 						</li>
+						<li>
+							<a href='<c:url value="/${role}/expenses" />'> Expenses </a>
+						</li>
 					</ul>
 				</div>
 				<div id="rightPan">
 					<h1>New Purchases</h1>
-					<br /> <br />
+					<br />
 					<form name="purchases" id="purchases" method="post"
 						action='<c:url value="/${role}/savePurchases" />'>
 						<table id="table1">
@@ -477,7 +480,8 @@
 							return true;
 						}
 						return false;
-					}
+					},
+					showOneMessage: true
 				});
 				
 				function calculateTotal() {

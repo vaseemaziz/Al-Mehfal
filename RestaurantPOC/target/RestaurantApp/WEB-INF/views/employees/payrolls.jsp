@@ -25,7 +25,7 @@
 		<script type="text/javascript">
 			$(document).ready(function () {
 				$("table").tablesorter({ theme : 'blue'});
-				$("ul.nav").find('li').eq(4).attr('class','current');
+				$("ul.nav").find('li').eq(3).attr('class','current');
 			});
 		</script>
 	</head>
@@ -35,9 +35,7 @@
 			<div id="header">
 				<div id="header_info">
 					<h2>Al Mehfal Restaurant</h2>
-					<jsp:include page="menu.jsp">
-						<jsp:param value="1" name="current" />
-					</jsp:include>
+					<jsp:include page="../menu.jsp"></jsp:include>
 				</div>
 			</div>
 
@@ -82,7 +80,11 @@
 							<td> ${payroll.createdBy} </td>
 							<td> ${payroll.createdOn} </td>
 						</tr>
-					</c:forEach> </tbody>
+					</c:forEach>
+					<c:if test="${not empty payrolls}">
+						<tr> <td colspan="8" align="center"> <input type="button" value=" Print " onclick="javascript:window.print();" /> </td> </tr>
+					</c:if>
+					</tbody>
 				</table>
 			</div>
 	

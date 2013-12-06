@@ -1,6 +1,7 @@
 package com.billing.service.impl;
 
 import java.util.List;
+import java.util.Properties;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -80,7 +81,7 @@ public class DishOrderServiceImpl implements DishOrderService {
 	
 	
 	@Override
-	public String verifyCustomer(String verifyMobile) {
+	public String[] verifyCustomer(String verifyMobile) {
 		return dishOrderDao.verifyCustomer(verifyMobile);
 	}
 	
@@ -102,6 +103,18 @@ public class DishOrderServiceImpl implements DishOrderService {
 	@Override
 	public List<String[]> getSalesReport2(String fromMonth, String toMonth, String year) {
 		return dishOrderDao.getSalesReport2(fromMonth, toMonth, year);
+	}
+
+
+	@Override
+	public Properties getSalesByMonth(int month, int year) {
+		return dishOrderDao.getSalesByMonth(month, year);
+	}
+
+
+	@Override
+	public Properties getSalesByYear(int year) {
+		return dishOrderDao.getSalesByYear(year);
 	}
 	
 }

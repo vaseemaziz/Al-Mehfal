@@ -1,12 +1,14 @@
 package com.billing.service;
 
+import com.billing.model.Expenses;
 import com.billing.model.ExpensesList;
 
 
 public interface ExpensesService {
 	
-	void saveExpenses(ExpensesList expenses);
+	void saveExpenses(Expenses expenses);
+	Expenses getExpenses(long id);
 	ExpensesList getExpenses(String fromDate, String toDate);
-	void updateExpenses(ExpensesList expenses);
+	void updateExpenses(Expenses expenses);
 	
 }

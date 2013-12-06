@@ -40,12 +40,13 @@
 		
 		<script type="text/javascript">
 			$(document).ready(function(){
-				$("#orderForm").validationEngine('attach', {
+				$("#employee").validationEngine('attach', {
 					onValidationComplete: function(form, status) {
 						return status;
-					}
+					},
+					showOneMessage: true
 				});
-				$("ul.nav").find('li').eq(4).attr('class','current');
+				$("ul.nav").find('li').eq(3).attr('class','current');
 			});
 		</script>
 	</head>
@@ -55,9 +56,7 @@
 			<div id="header">
 				<div id="header_info">
 					<h2>Al Mehfal Restaurant</h2>
-					<jsp:include page="menu.jsp">
-						<jsp:param value="1" name="current" />
-					</jsp:include>
+					<jsp:include page="../menu.jsp"></jsp:include>
 				</div>
 			</div>
 
@@ -166,6 +165,7 @@
 							<td>
 								<select name="role" class="validate[required]">
 									<option value="ROLE_USER"> Waiter </option>
+									<option value="ROLE_CLEANER"> Cleaner </option>
 									<option value="ROLE_MANAGER"> Manager </option>
 									<option value="ROLE_ADMIN"> Admin </option>
 								</select>

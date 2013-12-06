@@ -21,9 +21,6 @@
 		<li>
 			<a href='<c:url value="/${role}/salesReports" />'> Reports </a>
 		</li>
-				<li>
-			<a href='<c:url value="/${role}/expenses" />'>Expenses</a>
-		</li>
 		<li>
 			<a href='<c:url value="/${role}/employees" />'>Employees</a>
 		</li>

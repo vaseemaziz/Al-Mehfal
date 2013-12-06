@@ -60,6 +60,9 @@
 						<li>
 							<a href='<c:url value="/${role}/purchases" />'> Purchases </a>
 						</li>
+						<li>
+							<a href='<c:url value="/${role}/expenses" />'> Expenses </a>
+						</li>
 					</ul>
 				</div>
 				<div id="rightPan">

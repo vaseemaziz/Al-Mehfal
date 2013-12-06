@@ -315,9 +315,7 @@
 				</div>
 
 				<div id="col2">
-					<sec:authorize ifAnyGranted="ROLE_MANAGER, ROLE_ADMIN">
-						<h4 style="text-align:right;"> <a href='<c:url value="/${role}/creditDetails" />'> Credit Reminder </a> </h4>
-					</sec:authorize>
+					<h4 style="text-align:right;"> <a href='<c:url value="/${role}/creditDetails" />'> Credit Reminder </a> </h4>
 					<h3> Current Bills </h3>
 					<table class="tablesorter" id="currentBills">
 						<thead>
@@ -353,6 +351,85 @@
 								</tr>
 							</c:if>
 						</tbody>
+					</table> <br />
+					<table border="0" id="graphTable">
+						<tr>
+							<td align="center">
+								<select name="month" id="month">
+									<option value="0">All</option>
+									<option value="1">Jan</option>
+									<option value="2">Feb</option>
+									<option value="3">Mar</option>
+									<option value="4">Apr</option>
+									<option value="5">May</option>
+									<option value="6">June</option>
+									<option value="7">July</option>
+									<option value="8">Aug</option>
+									<option value="9">Sept</option>
+									<option value="10">Oct</option>
+									<option value="11">Nov</option>
+									<option value="12">Dec</option>
+								</select> &nbsp; <input type="text" name="year" id="year" size="4" value="${year}" />
+								&nbsp; <input type="button" value=" Get " id="getGraph" />
+								
+								<script type="text/javascript">
+									$("#month").val('${month}');
+									$("#getGraph").click(function(){
+										var m = $("#month").val();
+										var y = $("#year").val();
+										var url = '<c:url value="/${role}/salesByMonth" />?month='+m+'&year='+y;
+										$.ajax({
+											url: url,
+											success: function(data) {
+												var obj = jQuery.parseJSON(data);
+												chart.series[0].setData(obj.sales, false);
+												chart.xAxis[0].setCategories(obj.days, false);
+												chart.redraw();
+											}
+										});
+									});
+								</script>
+							</td>
+						</tr>
+						<tr>
+							<td id="graph">
+								<script type="text/javascript" src="web/js/highcharts.js"></script>
+								<div id="container1" style="width:410px;height:300px;margin:0 auto"></div>
+								<script type="text/javascript">
+									var chart = new Highcharts.Chart({
+										chart: {
+											renderTo: 'container1',
+											type: 'column'
+										},
+										title: {
+											text: 'Sales Report'
+										},
+										xAxis: {
+											categories: ${days}
+										},
+										yAxis: {
+											min: 0,
+										    title: {
+										    	text: 'No. of Sales'
+											}
+										},
+										exporting: {
+											enabled: false
+										},
+										plotOptions: {
+											column: {
+										    	pointPadding: 0.2,
+												borderWidth: 0
+											}
+										},
+										series: [{
+											name: 'Sales',
+											data: ${sales}
+										}]
+									});
+								</script>
+							</td>
+						</tr>
 					</table>
 				</div>
 			</div>
@@ -525,7 +602,7 @@
 					
 					$("#part3").dialog({
 						autoOpen: false,
-						resizable: false,
+						resizable: true,
 						width: 400,
 						modal: true,
 						buttons: {
@@ -680,7 +757,8 @@
 								return true;
 							}
 							return false;
-						}
+						},
+						showOneMessage: true
 					});
 					
 					$(document).on("click", "div#menuButton", function(event) {

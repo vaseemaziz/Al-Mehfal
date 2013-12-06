@@ -42,7 +42,7 @@
 			<div id="header">
 				<div id="header_info">
 					<h2>Al Mehfal Restaurant</h2>
-					<jsp:include page="menu.jsp"></jsp:include>
+					<jsp:include page="../menu.jsp"></jsp:include>
 				</div>
 			</div>
 
@@ -52,6 +52,7 @@
 					<b>Payroll Month - Year:</b> &nbsp; &nbsp;
 					<input type="text" name="month" value="${month}" style="width:60px;" class="uneditable" readonly /> &nbsp; &nbsp;
 					<input type="text" name="year" value="${year}" style="width:60px;" class="uneditable" readonly />
+					<br /> <br />
 					<table>
 						<tr>
 							<th>Reg No.</th>
@@ -77,9 +78,12 @@
 								<td> <input type="text" class="uneditable" value="${user}" name="payrolls[${status.index}].createdOn" style="width:100px;" readonly /> </td>
 							</tr>
 						</c:forEach>
-						<tr>
-							<td colspan="8" align="center"> <input type="submit" value=" Submit " /> </td>
-						</tr>
+						<c:if test="${empty empList}">
+							<tr><td colspan="8"> No Employees found </td> </tr>
+						</c:if>
+						<c:if test="${not empty empList}">
+							<tr> <td colspan="8" align="center"> <input type="submit" value=" Submit " /> </td> </tr>
+						</c:if>
 					</table>
 				</form>
 			</div>
@@ -94,7 +98,7 @@
 		
 		<script type="text/javascript">
 			$(document).ready(function(){
-				$("ul.nav").find('li').eq(4).attr('class','current');
+				$("ul.nav").find('li').eq(3).attr('class','current');
 			});
 		</script>
 	</body>

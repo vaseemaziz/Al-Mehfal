@@ -51,7 +51,7 @@
 		
 		<script type="text/javascript">
 			$(document).ready(function() {
-				$("#supplier").validationEngine('attach');
+				$("#supplier").validationEngine('attach',{showOneMessage: true});
 				$("ul.nav").find('li').eq(1).attr('class','current');
 			});
 		</script>
@@ -77,6 +77,9 @@
 						</li>
 						<li>
 							<a href='<c:url value="/${role}/purchases" />'> Purchases </a>
+						</li>
+						<li>
+							<a href='<c:url value="/${role}/expenses" />'> Expenses </a>
 						</li>
 					</ul>
 				</div>

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.billing.dao.ExpensesDao;
+import com.billing.model.Expenses;
 import com.billing.model.ExpensesList;
 import com.billing.service.ExpensesService;
 
@@ -16,7 +17,7 @@ public class ExpensesServiceImpl implements ExpensesService {
 	
 	
 	@Override
-	public void saveExpenses(ExpensesList expenses) {
+	public void saveExpenses(Expenses expenses) {
 		expensesDao.saveExpenses(expenses);
 	}
 
@@ -26,8 +27,13 @@ public class ExpensesServiceImpl implements ExpensesService {
 	}
 
 	@Override
-	public void updateExpenses(ExpensesList expenses) {
+	public void updateExpenses(Expenses expenses) {
 		expensesDao.updateExpenses(expenses);
+	}
+
+	@Override
+	public Expenses getExpenses(long id) {
+		return expensesDao.getExpenses(id);
 	}
 	
 }

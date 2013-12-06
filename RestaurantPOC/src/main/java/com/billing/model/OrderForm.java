@@ -32,7 +32,7 @@ public class OrderForm {
 	private String billStatus;
 	private String tableNum;
 	private String creditId;
-	private double paidAmount;
+	private String paidAmount;
 	
 	@NotBlank(message="Select sales type")
 	private String salesType;
@@ -122,11 +122,11 @@ public class OrderForm {
 		this.creditId = creditId;
 	}
 
-	public double getPaidAmount() {
+	public String getPaidAmount() {
 		return paidAmount;
 	}
 
-	public void setPaidAmount(double paidAmount) {
+	public void setPaidAmount(String paidAmount) {
 		this.paidAmount = paidAmount;
 	}
 

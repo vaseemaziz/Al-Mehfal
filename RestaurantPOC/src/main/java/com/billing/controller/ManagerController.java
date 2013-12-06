@@ -1,7 +1,9 @@
 package com.billing.controller;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Properties;
 
 import javax.validation.Valid;
 
@@ -25,6 +27,7 @@ import com.billing.model.Categories;
 import com.billing.model.Employee;
 import com.billing.model.EmployeePayroll;
 import com.billing.model.EmployeePayrollList;
+import com.billing.model.Expenses;
 import com.billing.model.ExpensesList;
 import com.billing.model.OrderForm;
 import com.billing.model.Purchases;
@@ -64,6 +67,22 @@ public class ManagerController {
     		model.addAttribute("orderForm", orderForm);
     	}
 		
+    	Calendar cal = Calendar.getInstance();
+    	int month = cal.get(Calendar.MONTH)+1;
+    	int year = cal.get(Calendar.YEAR);
+    	int daysInMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+    	String str = getSalesByMonth1(month, year);
+    	
+    	String days = "[";
+    	for(int i=0;i<daysInMonth;i++)
+    		days += (i+1) + ",";
+    	days = days.substring(0,days.length()-1) + "]";
+    	
+    	model.addAttribute("month", month);
+    	model.addAttribute("year", year);
+    	model.addAttribute("sales", str);
+    	model.addAttribute("days", days);
+    	
     	model.addAttribute("billToPrint", false);
     	model.addAttribute("dishItems", categoriesList);
     	model.addAttribute("pendingOrders", pendingOrders);
@@ -169,13 +188,11 @@ public class ManagerController {
 	public @ResponseBody String verifyCustomer(
 		@RequestParam(value="verifyMobile", required=true) String verifyMobile) {
 		
-		String name = dishOrderService.verifyCustomer(verifyMobile);
-		if(name=="none")
+		String[] str = dishOrderService.verifyCustomer(verifyMobile);
+		if(str==null)
 			return "{\"error\":\"No record found\"}";
 		
-		BillFormat billFormat = dishOrderService.printCreditBill(verifyMobile);
-		double due = billFormat.getTotalBill() - billFormat.getTotalPaidBill();
-		return "{\"name\":\"" + name + "\",\"due\":\"" + due + "\"}";
+		return "{\"name\":\"" + str[0] + "\",\"due\":\"" + str[1] + "\"}";
 	}
 	
 	
@@ -381,6 +398,8 @@ public class ManagerController {
 	
 	@RequestMapping(value="/findPurchases", method=RequestMethod.GET)
 	public String findPurchases(Model model) {
+		List<Supplier> list = supplierService.getSupplierList();
+		model.addAttribute("suppliersList", list);
 		return "purchases/findPurchases";
 	}
 	
@@ -410,23 +429,39 @@ public class ManagerController {
 	
 	@RequestMapping(value="/expenses", method=RequestMethod.GET)
 	public String expenses(Model model) {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    	User user = (User) auth.getPrincipal();
-    	model.addAttribute("user", user.getUsername());
-		return "expenses";
+		Expenses exp = new Expenses();
+		model.addAttribute("expenses", exp);
+		model.addAttribute("url", "saveExpenses");
+		return "expenses/expenses";
 	}
 	
 	@RequestMapping(value="/saveExpenses", method=RequestMethod.POST)
-	public String saveExpenses(@ModelAttribute("expenses") ExpensesList expenses, Model model) {
+	public String saveExpenses(@ModelAttribute("expenses") Expenses expenses, Model model) {
 		expensesService.saveExpenses(expenses);
 		model.addAttribute("url", "/manager/expenses");
 		model.addAttribute("message","Saved Successfully");
 		return "success";
 	}
 	
+	@RequestMapping(value="/editExpenses", method=RequestMethod.GET)
+	public String editExpenses(@RequestParam("id") String id, Model model) {
+		Expenses exp = expensesService.getExpenses(Long.parseLong(id));
+		model.addAttribute("expenses", exp);
+		model.addAttribute("url", "updateExpenses");
+		return "expenses/expenses";
+	}
+	
+	@RequestMapping(value="/updateExpenses", method=RequestMethod.POST)
+	public String updateExpenses(@ModelAttribute("expenses") Expenses expenses, Model model) {
+		expensesService.updateExpenses(expenses);
+		model.addAttribute("url", "/manager/expenses");
+		model.addAttribute("message","Updated Successfully");
+		return "success";
+	}
+	
 	@RequestMapping(value="/viewExpenses", method=RequestMethod.GET)
 	public String viewExpenses(Model model) {
-		return "viewExpenses";
+		return "expenses/viewExpenses";
 	}
 	
 	@RequestMapping(value="/getExpenses", method=RequestMethod.POST)
@@ -455,7 +490,7 @@ public class ManagerController {
 		Employee emp = new Employee();
 		model.addAttribute("url", "/saveEmployee");
 		model.addAttribute("emp", emp);
-		return "employees";
+		return "employees/employees";
 	}
 	
 	@RequestMapping(value="/editEmployee", method=RequestMethod.GET)
@@ -463,13 +498,13 @@ public class ManagerController {
 		Employee emp = employeeService.getEmployee(id);
 		model.addAttribute("url", "/updateEmployee");
 		model.addAttribute("emp", emp);
-		return "employees";
+		return "employees/employees";
 	}
 	
 	@RequestMapping(value="/deleteEmployee", method=RequestMethod.GET)
 	public String deleteEmployee(@RequestParam("id") String id, Model model) {
 		employeeService.deleteEmployee(id);
-		return "showEmployees";
+		return "employees/showEmployees";
 	}
 	
 	@RequestMapping(value="/saveEmployee", method=RequestMethod.POST)
@@ -492,12 +527,12 @@ public class ManagerController {
 	public String showEmployess(Model model) {
 		List<Employee> list = employeeService.getEmployeeList();
 		model.addAttribute("list", list);
-		return "showEmployees";
+		return "employees/showEmployees";
 	}
 	
 	@RequestMapping(value="/payrolls", method=RequestMethod.GET)
 	public String payrolls(Model model) {
-		return "payrolls";
+		return "employees/payrolls";
 	}
 	
 	
@@ -506,30 +541,33 @@ public class ManagerController {
 			@RequestParam("month") String month,
 			@RequestParam("year") String year) {
 		
+		String[] months = {"Jan","Feb","Mar","Apr","May","June","July","Aug","Sept","Oct","Nov","Dec"};
+		Calendar cal = Calendar.getInstance();
 		List<EmployeePayroll> payrolls = employeeService.getPayrolls(month + " " + year);
-		if(payrolls.size() > 0) {
-			redirectAttributes.addFlashAttribute("month", month);
-			redirectAttributes.addFlashAttribute("year", year);
-			redirectAttributes.addFlashAttribute("payrolls", payrolls);
-			return "redirect:/manager/payrolls";
+		
+		if(month.equals(months[cal.get(Calendar.MONTH)]) && year.equals(""+cal.get(Calendar.YEAR)) && payrolls.size() <= 0) {
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+	    	User user = (User) auth.getPrincipal();
+	    	model.addAttribute("user", user.getUsername());
+	    	
+			List<Employee> emp = employeeService.getEmployeeList();
+			model.addAttribute("empList", emp);
+			model.addAttribute("month", month);
+			model.addAttribute("year", year);
+			
+			return "employees/employeePayroll";
 		}
 		
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    	User user = (User) auth.getPrincipal();
-    	model.addAttribute("user", user.getUsername());
-    	
-		List<Employee> emp = employeeService.getEmployeeList();
-		model.addAttribute("empList", emp);
-		model.addAttribute("month", month);
-		model.addAttribute("year", year);
-		
-		return "employeePayroll";
+		redirectAttributes.addFlashAttribute("month", month);
+		redirectAttributes.addFlashAttribute("year", year);
+		redirectAttributes.addFlashAttribute("payrolls", payrolls);
+		return "redirect:/manager/payrolls";
 	}
 	
 	@RequestMapping(value="/savePayroll", method=RequestMethod.POST)
 	public String savePayroll(@ModelAttribute("payrolls") EmployeePayrollList payrolls, Model model) {
 		employeeService.savePayrolls(payrolls);
-		model.addAttribute("url", "/manager/payroll");
+		model.addAttribute("url", "/manager/payrolls");
 		model.addAttribute("message", "Saved Successfully");
 		return "success";
 	}
@@ -550,6 +588,7 @@ public class ManagerController {
 		return "salesReportsDateWise";
 	}
 	
+	
 	@RequestMapping(value="/monthWiseReport", method=RequestMethod.POST)
 	public String report2(@RequestParam("year") String year, @RequestParam("fMonth") String fMonth, @RequestParam("tMonth") String tMonth, Model model) {
 		List<String[]> list = dishOrderService.getSalesReport2(fMonth, tMonth, year);
@@ -561,6 +600,79 @@ public class ManagerController {
 		model.addAttribute("tMonth",tMonth);
 		model.addAttribute("list", list);
 		return "salesReportsMonthWise";
+	}
+	
+	
+	@RequestMapping(value="/salesByMonth", method=RequestMethod.GET)
+	public @ResponseBody String getSalesByMonth(@RequestParam(value="month", required=true) String month, 
+			@RequestParam(value="year", required=true) String year, Model model) {
+		
+		int m = Integer.parseInt(month);
+		int y = Integer.parseInt(year);
+		
+		if(m == 0) {
+			String str1 = getSalesByYear1(y);
+			String days1 = "[\"Jan\", \"Feb\", \"Mar\", \"Apr\", \"May\", \"June\", \"July\", \"Aug\", \"Sept\", \"Oct\", \"Nov\", \"Dec\"]";
+			
+			return "{\"sales\":" + str1 + ",\"days\":" + days1 + "}";
+		}
+		
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.MONTH, m-1);
+		int daysInMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+		
+		String str = getSalesByMonth1(m, y);
+		
+		String days = "[";
+    	for(int i=0;i<daysInMonth;i++)
+    		days += (i+1) + ",";
+    	days = days.substring(0,days.length()-1) + "]";
+    	System.out.println(daysInMonth + ": " + days);
+		
+		return "{\"sales\":" + str + ",\"days\":" + days + "}";
+	}
+	
+	private String getSalesByMonth1(int month, int year) {
+		
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.MONTH, month-1);
+		cal.set(Calendar.YEAR, year);
+		
+		int daysInMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+		Properties prop = dishOrderService.getSalesByMonth(month, year);
+		String str = "[";
+		
+		for(int i=0; i<daysInMonth; i++) {
+			String key = "" + (i+1);
+			String value = prop.getProperty(key);
+			
+			if(value==null)
+				str += "0,";
+			else
+				str += value + ",";
+		}
+		
+		str = str.substring(0, str.length()-1) + "]";
+		return str;
+	}
+	
+	private String getSalesByYear1(int year) {
+		
+		Properties prop = dishOrderService.getSalesByYear(year);
+		String str = "[";
+		
+		for(int i=0; i<12; i++) {
+			String key = "" + (i+1);
+			String value = prop.getProperty(key);
+			
+			if(value==null)
+				str += "0,";
+			else
+				str += value + ",";
+		}
+		
+		str = str.substring(0, str.length()-1) + "]";
+		return str;
 	}
 	
 }

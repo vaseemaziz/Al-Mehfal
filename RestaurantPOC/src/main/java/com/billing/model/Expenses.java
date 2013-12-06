@@ -5,6 +5,8 @@ import org.hibernate.validator.constraints.NotBlank;
 
 public class Expenses {
 	
+	private String expId;
+	
 	@NotBlank
 	private String expHead;
 	
@@ -20,15 +22,21 @@ public class Expenses {
 	@NotBlank
 	private String expDate;
 	
-	@NotBlank
 	private String createdBy;
 	
-	@NotBlank
 	private String createdOn;
 	
 	private String lastUpdatedOn;
 	private String lastUpdatedBy;
 	
+	
+	public String getExpId() {
+		return expId;
+	}
+	
+	public void setExpId(String expId) {
+		this.expId = expId;
+	}
 	
 	public String getExpHead() {
 		return expHead;
@@ -38,7 +46,6 @@ public class Expenses {
 		this.expHead = expHead;
 	}
 	
-	
 	public String getExpSubHead() {
 		return expSubHead;
 	}
@@ -46,7 +53,6 @@ public class Expenses {
 	public void setExpSubHead(String expSubHead) {
 		this.expSubHead = expSubHead;
 	}
-	
 	
 	public String getExpDetails() {
 		return expDetails;
@@ -56,7 +62,6 @@ public class Expenses {
 		this.expDetails = expDetails;
 	}
 	
-	
 	public double getExpAmount() {
 		return expAmount;
 	}
@@ -64,7 +69,6 @@ public class Expenses {
 	public void setExpAmount(double expAmount) {
 		this.expAmount = expAmount;
 	}
-	
 	
 	public String getExpDate() {
 		return expDate;
@@ -74,7 +78,6 @@ public class Expenses {
 		this.expDate = expDate;
 	}
 	
-	
 	public String getCreatedBy() {
 		return createdBy;
 	}
@@ -82,7 +85,6 @@ public class Expenses {
 	public void setCreatedBy(String createdBy) {
 		this.createdBy = createdBy;
 	}
-	
 	
 	public String getCreatedOn() {
 		return createdOn;
@@ -92,7 +94,6 @@ public class Expenses {
 		this.createdOn = createdOn;
 	}
 	
-	
 	public String getLastUpdatedOn() {
 		return lastUpdatedOn;
 	}
@@ -100,7 +101,6 @@ public class Expenses {
 	public void setLastUpdatedOn(String lastUpdatedOn) {
 		this.lastUpdatedOn = lastUpdatedOn;
 	}
-	
 	
 	public String getLastUpdatedBy() {
 		return lastUpdatedBy;
