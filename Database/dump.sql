@@ -1,5 +1,3 @@
--- MySQL dump 10.13  Distrib 5.5.32, for Win32 (x86)
---
 -- Host: localhost    Database: restaurant
 -- ------------------------------------------------------
 -- Server version	5.5.32
@@ -472,5 +470,3 @@ UNLOCK TABLES;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
-
--- Dump completed on 2013-12-07 14:13:22
