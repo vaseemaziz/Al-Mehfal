@@ -38,22 +38,8 @@ public class UserController {
 	
 	@RequestMapping(value = "/sales" , method = RequestMethod.GET)
 	public String salesPage(Model model) {
-		if(model.containsAttribute("billToPrint"))
-			return "sales/sales";
-
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    	User user = (User) auth.getPrincipal();
-    	
-    	List<OrderForm> pendingOrders = dishOrderService.getPendingOrders(user.getUsername());
-    	List<Categories> categoriesList = dishOrderService.getDishItems();
-    	
-    	if(!model.containsAttribute("billToOpen")) {
-    		OrderForm orderForm = dishOrderService.createOrder();
-    		orderForm.setCreatedBy(user.getUsername());
-    		model.addAttribute("orderForm", orderForm);
-    	}
 		
-    	Calendar cal = Calendar.getInstance();
+		Calendar cal = Calendar.getInstance();
     	int month = cal.get(Calendar.MONTH)+1;
     	int year = cal.get(Calendar.YEAR);
     	int daysInMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
@@ -69,6 +55,21 @@ public class UserController {
     	model.addAttribute("sales", str);
     	model.addAttribute("days", days);
     	
+		if(model.containsAttribute("billToPrint"))
+			return "sales/sales";
+
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    	User user = (User) auth.getPrincipal();
+    	
+    	List<OrderForm> pendingOrders = dishOrderService.getPendingOrders(user.getUsername());
+    	List<Categories> categoriesList = dishOrderService.getDishItems();
+    	
+    	if(!model.containsAttribute("billToOpen")) {
+    		OrderForm orderForm = dishOrderService.createOrder();
+    		orderForm.setCreatedBy(user.getUsername());
+    		model.addAttribute("orderForm", orderForm);
+    	}
+		
     	model.addAttribute("billToPrint", false);
     	model.addAttribute("dishItems", categoriesList);
     	model.addAttribute("pendingOrders", pendingOrders);

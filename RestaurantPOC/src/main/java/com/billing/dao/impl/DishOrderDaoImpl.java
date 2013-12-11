@@ -349,20 +349,39 @@ public class DishOrderDaoImpl implements DishOrderDao {
 	
 	@Override
 	public String[] verifyCustomer(String verifyMobile) {
-		String verifyQuery = "select c1.name as 'name', sum(c2.due_amount)-sum(c2.paid_amount) as 'due_amount' from customer c1, credit_details c2 where c1.mobile=? group by c1.name;";
-		List<String[]> list = jdbcTemplate.query(verifyQuery, new Object[]{verifyMobile}, new RowMapper<String[]>() {
+		String verifyQuery = "select name from customer where mobile=?";
+		List<String> list = jdbcTemplate.query(verifyQuery, new Object[]{verifyMobile}, new RowMapper<String>() {
 			@Override
-			public String[] mapRow(ResultSet rs, int row) throws SQLException {
-				String[] str = new String[2];
-				str[0] = rs.getString("name");
-				str[1] = rs.getString("due_amount");
-				return str;
+			public String mapRow(ResultSet rs, int row) throws SQLException {
+				return rs.getString("name");
+			}
+		});
+		
+		String verifyQuery1 = "select sum(due_amount)-sum(paid_amount) as 'amount' from credit_details where customer_id=?";
+		List<String> list1 = jdbcTemplate.query(verifyQuery1, new Object[]{verifyMobile}, new RowMapper<String>() {
+			@Override
+			public String mapRow(ResultSet rs, int row) throws SQLException {
+				String amt = rs.getString("amount");
+				if(amt==null || amt.equals(""))
+					amt = "0";
+				return amt;
 			}
 		});
 		
 		if(list.size()==0)
 			return null;
-		return list.get(0);
+		
+		String[] str1 = new String[2];
+		if(list1.size()==0) {
+			str1[0] = list.get(0);
+			str1[1] = "0";
+		}
+		else {
+			str1[0] = list.get(0);
+			str1[1] = list1.get(0);
+		}
+		
+		return str1;
 	}
 	
 	
@@ -387,7 +406,10 @@ public class DishOrderDaoImpl implements DishOrderDao {
 			List<String> amtList = jdbcTemplate.query(query2, new Object[]{list.get(i)[1]}, new RowMapper<String>() {
 				@Override
 				public String mapRow(ResultSet rs, int row) throws SQLException {
-					return rs.getString("amount");
+					String str = rs.getString("amount");
+					if(str==null || str.equals(""))
+						str = "0";
+					return str;
 				}
 			});
 			
