@@ -83,21 +83,57 @@ public class DishOrderDaoImpl implements DishOrderDao {
 	@Override
 	public List<OrderForm> getPendingOrders(String userId) {
 		final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    	String pendingOrdersQuery = "select bill_number, bill_amount, discount, net_amount, sales_type, table_num, bill_date from orders where bill_status=? and created_by=?";
-    	List<OrderForm> pendingOrders = jdbcTemplate.query(pendingOrdersQuery, new Object[]{"pending", userId}, new RowMapper<OrderForm>() {
-			@Override
-			public OrderForm mapRow(ResultSet rs, int rowNum) throws SQLException {
-				OrderForm orderForm = new OrderForm();
-				orderForm.setBillNum(rs.getLong("bill_number"));
-				orderForm.setBillAmount(rs.getDouble("bill_amount"));
-				orderForm.setDiscount(rs.getDouble("discount"));
-				orderForm.setBillNetAmount(rs.getDouble("net_amount"));
-				orderForm.setSalesType(rs.getString("sales_type"));
-				orderForm.setTableNum(rs.getString("table_num"));
-				orderForm.setBillDate(dateFormat.format(rs.getTimestamp("bill_date")));
-				return orderForm;
-			}
-    	});
+		String pendingOrdersQuery = "";
+		List<OrderForm> pendingOrders = null;
+		
+		if(userId.equals("*")) {
+			pendingOrdersQuery = "select bill_number, sales_type, table_num from orders where bill_status=?";
+			
+	    	pendingOrders = jdbcTemplate.query(pendingOrdersQuery, new Object[]{"pending"}, new RowMapper<OrderForm>() {
+				@Override
+				public OrderForm mapRow(ResultSet rs, int rowNum) throws SQLException {
+					OrderForm orderForm = new OrderForm();
+					orderForm.setBillNum(rs.getLong("bill_number"));
+					orderForm.setSalesType(rs.getString("sales_type"));
+					orderForm.setTableNum(rs.getString("table_num"));
+					return orderForm;
+				}
+	    	});
+	    	
+	    	for (OrderForm orderForm : pendingOrders) {
+	    		long billNumber = orderForm.getBillNum();
+				String dishOrderQuery = "select item_name, quantity from dish_orders where bill_number=?";
+				List<OrderItem> orderedItems = jdbcTemplate.query(dishOrderQuery, new Object[]{billNumber}, new RowMapper<OrderItem>() {
+					@Override
+					public OrderItem mapRow(ResultSet rs, int rowNum) throws SQLException {
+						OrderItem orderItem = new OrderItem();
+						orderItem.setItemName(rs.getString("item_name"));
+						int qty = rs.getInt("quantity");
+						orderItem.setQuantity(qty);
+						return orderItem;
+					}
+				});
+				orderForm.setOrderedItems(orderedItems);
+	    	}
+		}
+		else {
+			pendingOrdersQuery = "select bill_number, bill_amount, discount, net_amount, sales_type, table_num, bill_date from orders where bill_status=? and created_by=?";
+		
+	    	pendingOrders = jdbcTemplate.query(pendingOrdersQuery, new Object[]{"pending", userId}, new RowMapper<OrderForm>() {
+				@Override
+				public OrderForm mapRow(ResultSet rs, int rowNum) throws SQLException {
+					OrderForm orderForm = new OrderForm();
+					orderForm.setBillNum(rs.getLong("bill_number"));
+					orderForm.setBillAmount(rs.getDouble("bill_amount"));
+					orderForm.setDiscount(rs.getDouble("discount"));
+					orderForm.setBillNetAmount(rs.getDouble("net_amount"));
+					orderForm.setSalesType(rs.getString("sales_type"));
+					orderForm.setTableNum(rs.getString("table_num"));
+					orderForm.setBillDate(dateFormat.format(rs.getTimestamp("bill_date")));
+					return orderForm;
+				}
+	    	});
+		}
     	return pendingOrders;
 	}
 	
