@@ -56,18 +56,11 @@ public class ManagerController {
 		Calendar cal = Calendar.getInstance();
     	int month = cal.get(Calendar.MONTH)+1;
     	int year = cal.get(Calendar.YEAR);
-    	int daysInMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
     	String str = getSalesByMonth1(month, year);
-    	
-    	String days = "[";
-    	for(int i=0;i<daysInMonth;i++)
-    		days += (i+1) + ",";
-    	days = days.substring(0,days.length()-1) + "]";
     	
     	model.addAttribute("month", month);
     	model.addAttribute("year", year);
     	model.addAttribute("sales", str);
-    	model.addAttribute("days", days);
     	
 		if(model.containsAttribute("billToPrint"))
 			return "sales/sales";
@@ -229,6 +222,12 @@ public class ManagerController {
 	}
 	
 	
+	@RequestMapping(value="/reports", method=RequestMethod.GET)
+	public String reports(Model model) {
+		return "redirect:/manager/viewRawMaterials";
+	}
+	
+	
 	
 	
 	
@@ -238,8 +237,7 @@ public class ManagerController {
 	
 	@RequestMapping(value="/rawMaterials", method=RequestMethod.GET)
 	public String rawMaterialsPage(Model model) {
-		model.addAttribute("mode", "save");
-		return "rawMaterials";
+		return "rawMaterials/rawMaterials";
 	}
 	
 	
@@ -277,9 +275,8 @@ public class ManagerController {
 	@RequestMapping(value="/viewRawMaterials", method=RequestMethod.GET)
 	public String viewRawMaterialsPage(Model model) {
 		List<RawMaterial> list = rawMaterialService.getRawMaterials();
-		model.addAttribute("mode", "view");
 		model.addAttribute("list", list);
-		return "rawMaterials";
+		return "rawMaterials/viewRawMaterials";
 	}
 	
 	
@@ -614,24 +611,14 @@ public class ManagerController {
 		
 		if(m == 0) {
 			String str1 = getSalesByYear1(y);
-			String days1 = "[\"Jan\", \"Feb\", \"Mar\", \"Apr\", \"May\", \"June\", \"July\", \"Aug\", \"Sept\", \"Oct\", \"Nov\", \"Dec\"]";
-			
-			return "{\"sales\":" + str1 + ",\"days\":" + days1 + "}";
+			return "{\"sales\":" + str1 + "}";
 		}
 		
 		Calendar cal = Calendar.getInstance();
 		cal.set(Calendar.MONTH, m-1);
-		int daysInMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
 		
 		String str = getSalesByMonth1(m, y);
-		
-		String days = "[";
-    	for(int i=0;i<daysInMonth;i++)
-    		days += (i+1) + ",";
-    	days = days.substring(0,days.length()-1) + "]";
-    	System.out.println(daysInMonth + ": " + days);
-		
-		return "{\"sales\":" + str + ",\"days\":" + days + "}";
+		return "{\"sales\":" + str + "}";
 	}
 	
 	private String getSalesByMonth1(int month, int year) {
@@ -639,8 +626,13 @@ public class ManagerController {
 		Calendar cal = Calendar.getInstance();
 		cal.set(Calendar.MONTH, month-1);
 		cal.set(Calendar.YEAR, year);
+		int daysInMonth = 0;
 		
-		int daysInMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+		if((year%4==0 && (year%100!=0 || year%400==0)) && (month==2))
+			daysInMonth = 29;
+		else
+			daysInMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+		
 		Properties prop = dishOrderService.getSalesByMonth(month, year);
 		String str = "[";
 		
@@ -649,9 +641,9 @@ public class ManagerController {
 			String value = prop.getProperty(key);
 			
 			if(value==null)
-				str += "0,";
+				str += "[\"" + key + "\", 0],";
 			else
-				str += value + ",";
+				str += "[\"" + key + "\", " + value + "],";
 		}
 		
 		str = str.substring(0, str.length()-1) + "]";
@@ -666,11 +658,12 @@ public class ManagerController {
 		for(int i=0; i<12; i++) {
 			String key = "" + (i+1);
 			String value = prop.getProperty(key);
+			String[] months = {"Jan","Feb","Mar","Apr","May","June","July","Aug","Sept","Oct","Nov","Dec"};
 			
 			if(value==null)
-				str += "0,";
+				str += "[\"" + months[i] + "\", 0],";
 			else
-				str += value + ",";
+				str += "[\"" + months[i] + "\", " + value + "],";
 		}
 		
 		str = str.substring(0, str.length()-1) + "]";

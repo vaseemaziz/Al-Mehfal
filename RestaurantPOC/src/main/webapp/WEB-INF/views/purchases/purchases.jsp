@@ -5,28 +5,27 @@
 	<c:set var="role" value="user"></c:set>
 </sec:authorize>
 <sec:authorize ifAnyGranted="ROLE_MANAGER">
-	<c:set var="role" value="manager"></c:set>
+	<c:set var="role" value="manager" ></c:set>
 </sec:authorize>
 <sec:authorize ifAnyGranted="ROLE_ADMIN">
 	<c:set var="role" value="admin"></c:set>
 </sec:authorize>
-<!DOCTYPE html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 	<head>
 		<title>Purchases Page - Al Mehfal Restaurant</title>
 		<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 		
-		<link rel="stylesheet" href="web/css/common.css" type="text/css" />
+		<link rel="stylesheet" href="web/css/screen.css" type="text/css" />
 		<link href="web/css/jquery.validation.css" rel="stylesheet" type="text/css" />
 		<link href="web/css/jquery.ui.css" rel="stylesheet" type="text/css" />
-		<link href="web/css/theme.blue.css" rel="stylesheet" type="text/css" />
+		<link href="web/css/theme.default.css" rel="stylesheet" type="text/css" />
 		
 		<script src="web/js/jquery.min.js" type="text/javascript"></script>
 		<script src="web/js/jquery.tablesorter.js" type="text/javascript"></script>
 		<script src="web/js/jquery.ui.js" type="text/javascript"></script>
 		<script src="web/js/jquery.validation.js" type="text/javascript"></script>
 		<script src="web/js/jquery.validation-en.js" type="text/javascript"></script>
-		<script src="web/js/jquery.ui.touch-punch.js" type="text/javascript"></script>
 		
 		<style type="text/css">
 			#table1 {
@@ -46,12 +45,13 @@
 				line-height: 18px;
 				color: black;
 				background-color: white;
-				border: 2px inset #cccccc;
+				margin-bottom: 5px;
+				border: 2px inset #777;
 			}
 			#table1 tr td input[type="text"].uneditable {
-				background-color: #aaa;
+				background: transparent;
 				color: black;
-				border: 2px inset #cccccc;
+				border: none;
 			}
 			div#menuButton {
 				display: inline-block;
@@ -101,9 +101,9 @@
 				border: 2px inset #cccccc;
 			}
 			#table2 tr td input[type="text"].uneditable {
-				background-color: #aaa;
+				background: transparent;
 				color: black;
-				border: 2px inset #cccccc;
+				border: none;
 			}
 			#table4 {
 				border-collapse: collapse;
@@ -112,152 +112,96 @@
 				padding: 5px;
 				text-align: left;
 			}
-			.tablesorter tbody tr td {
-				font-size: 13px;
-			}
-			.tablesorter thead tr th {
-				font-size: 14px;
-			}
 		</style>
 	</head>
 
 	<body>
 		<div id="wrapper">
-			<div id="header">
-				<div id="header_info">
-					<h2>Al Mehfal Restaurant</h2>
-					<jsp:include page="../menu.jsp"></jsp:include>
-				</div>
-			</div>
-	
-			<div class="content_2columns">
-				<div id="leftPan">
-					<ul style="display: block;" class="nav1">
-						<li>
-							<a href='<c:url value="/${role}/rawMaterials" />'> Raw Materials </a>
-						</li>
-						<li>
-							<a href='<c:url value="/${role}/suppliers" />'> Suppliers </a>
-						</li>
-						<li class="current">
-							<a href='<c:url value="/${role}/purchases" />'> Purchases </a>
-						</li>
-						<li>
-							<a href='<c:url value="/${role}/expenses" />'> Expenses </a>
-						</li>
+			<jsp:include page="../header.jsp"></jsp:include>
+			<div id="content">
+				<div class="tabbed_area">
+					<ul class="tabs">
+						<li><a href='<c:url value="/${role}/rawMaterials" />' class="tab">Raw Materials</a></li>
+						<li><a href='<c:url value="/${role}/suppliers" />' class="tab">Suppliers</a></li>
+						<li><a href='<c:url value="/${role}/purchases" />' class="tab active">Purchases</a></li>
+						<li><a href='<c:url value="/${role}/expenses" />' class="tab">Expenses</a></li>
+						<li><a href='<c:url value="/${role}/employees" />' class="tab">Employees</a></li>
 					</ul>
-				</div>
-				<div id="rightPan">
-					<h1>New Purchases</h1>
-					<br />
-					<form name="purchases" id="purchases" method="post"
-						action='<c:url value="/${role}/savePurchases" />'>
-						<table id="table1">
-							<tr>
-								<td colspan="4" align="right">
-									<a href='<c:url value="/${role}/findPurchases" />'> Find Purchases </a> <br />
-								</td>
-							</tr>
-							<tr>
-								<td align="right">GRN <b>:</b> &nbsp;</td>
-								<td>
-									<input class="uneditable" type="text" name="grp"
-										value="${purchases.grnNo}" readonly /></td>
-								<td align="right">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Invoice Date <b>:</b> &nbsp;</td>
-								<td>
-									<input type="text" id="invoiceDate" name="invoiceDate"
-										readonly value="${purchases.invoiceDate}"
-										class="validate[required]" />
-								</td>
-							</tr>
-							<tr>
-								<td align="right">Date of Purchase <b>:</b> &nbsp;</td>
-								<td>
-									<input type="text" id="purchaseDate" name="purchaseDate"
-										class="validate[required]" />
-								</td>
-								<td align="right">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Invoice Amount <b>:</b> &nbsp; </td>
-								<td>
-									<input class="validate[required] uneditable" type="text"
-										id="invoiceAmount" name="invoiceAmount" readonly />
-								</td>
-							</tr>
-							<tr>
-								<td align="right">Supplier# <b>:</b> &nbsp;</td>
-								<td>
-									<input type="text" name="supplierNum" id="supplierNum"
-										class="validate[required]" placeHolder="SUPPLIER_NO" readonly />
-									<div id="menuButton">&nbsp; ... &nbsp;</div>
-									<input type="text"
-										name="supplierName" id="supplierName" class="validate[required]"
-										placeHolder="SUPPLIER_NAME" readonly />
-								</td>
-								<td align="right">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Paid Amount <b>:</b> &nbsp; </td>
-								<td>
-									<input class="validate[required]" type="text" name="paidAmount" />
-								</td>
-							</tr>
-							<tr>
-								<td align="right">Invoice No. <b>:</b> &nbsp;</td>
-								<td>
-									<input type="text" name="invoiceNum" class="validate[required]" />
-								</td>
-								<td align="right">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Created On <b>:</b> &nbsp; </td>
-								<td>
-									<input class="uneditable" type="text" name="createdOn"
-										value="${purchases.createdOn}" readonly />
-								</td>
-							</tr>
-							<tr>
-								<td></td>
-								<td></td>
-								<td align="right">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Created By <b>:</b> &nbsp; </td>
-								<td>
-									<input type="text" name="createdBy" class="uneditable"
-										value="${purchases.createdBy}" readonly />
-								</td>
-							</tr>
-						</table>
-						<br /> <br />
-						<table id="table2">
-							<tr>
-								<th>Raw<br />Marerial ID</th>
-								<th>Raw Marerial<br />Description</th>
-								<th>Unit of<br />Measure</th>
-								<th><br />Quantity</th>
-								<th><br />Amount</th>
-								<th></th>
-							</tr>
-							<tr>
-								<td colspan="6" align="center">
-									<input id="open" type="button" value="  Raw Materials  " /> &nbsp; 
-									<input type="submit" value="  Save  " /> &nbsp; 
-									<input type="button" value="  New  " />
-								</td>
-							</tr>
-							<tr>
-								<td colspan="4" class="noBorder"></td>
-								<td>
-									<input type="text" class="uneditable" id="totalAmt"
-										name="totalAmount" readonly />
-								</td>
-								<td class="noBorder"></td>
-							</tr>
-						</table>
-					</form>
+					<div class="content1" style="padding-left: 30px;color: black;">
+						<br /><br /><h1>New Purchases</h1><br /><br />
+						<form name="purchases" id="purchases" method="post" action='<c:url value="/${role}/savePurchases" />'>
+							<table id="table1">
+								<tr>
+									<td align="right">GRN <b>:</b> &nbsp;</td>
+									<td><input class="uneditable" type="text" name="grp" value="${purchases.grnNo}" readonly="readonly" /></td>
+									<td align="right">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Invoice Date <b>:</b> &nbsp;</td>
+									<td><input type="text" id="invoiceDate" name="invoiceDate" value="${purchases.invoiceDate}" class="validate[required]" readonly="readonly" /></td>
+								</tr>
+								<tr>
+									<td align="right">Date of Purchase <b>:</b> &nbsp;</td>
+									<td><input type="text" id="purchaseDate" name="purchaseDate" class="validate[required]" readonly="readonly" /></td>
+									<td align="right">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Paid Amount <b>:</b> &nbsp; </td>
+									<td><input class="validate[required]" type="text" name="paidAmount" /></td>
+								</tr>
+								<tr>
+									<td align="right">Supplier# <b>:</b> &nbsp;</td>
+									<td>
+										<input type="text" name="supplierNum" id="supplierNum" class="validate[required]" placeHolder="SUPPLIER_NO" readonly="readonly" />
+										<div id="menuButton">&nbsp; ... &nbsp;</div>
+										<input type="text" name="supplierName" id="supplierName" class="validate[required]" placeHolder="SUPPLIER_NAME" readonly="readonly" />
+									</td>
+									<td align="right">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Invoice Amount <b>:</b> &nbsp; </td>
+									<td><input type="text" id="invoiceAmount" value="0" class="uneditable" name="invoiceAmount" readonly="readonly" /></td>
+								</tr>
+								<tr>
+									<td align="right">Invoice No. <b>:</b> &nbsp;</td>
+									<td><input type="text" name="invoiceNum" class="validate[required]" /></td>
+									<td align="right">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Created On <b>:</b> &nbsp; </td>
+									<td><input type="text" class="uneditable" name="createdOn" value="${purchases.createdOn}" readonly="readonly" /></td>
+								</tr>
+								<tr>
+									<td></td>
+									<td></td>
+									<td align="right">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Created By <b>:</b> &nbsp; </td>
+									<td><input type="text" name="createdBy" class="uneditable" value="${purchases.createdBy}" readonly="readonly" /></td>
+								</tr>
+							</table>
+							<br /> <br />
+							<table id="table2">
+								<tr>
+									<td colspan="6" align="right" class="noBorder" style="padding-top:5px;padding-bottom:5px;">
+										<input id="open" type="button" class="btn" value="Raw Materials" /> 
+										&nbsp; &nbsp; <input type="submit" class="btn" value="Save" />
+									</td>
+								</tr>
+								<tr>
+									<th>Raw<br />Marerial ID</th>
+									<th>Raw Marerial<br />Description</th>
+									<th>Unit of<br />Measure</th>
+									<th><br />Quantity</th>
+									<th><br />Amount</th>
+									<th></th>
+								</tr>
+								<tr>
+									<td></td><td></td><td></td><td></td>
+									<td><input type="text" class="uneditable" id="totalAmt" name="totalAmount" readonly="readonly" /></td>
+									<td> &nbsp; &nbsp; &nbsp; &nbsp;</td>
+								</tr>
+							</table>
+						</form>
+						<br /><br />
+					</div>
 				</div>
 			</div>
-	
 			<div id="footer">
 				<div id="footer_info">
-					<p class="copyright">&copy; 2013, Al Mehfal Restaurant, All
-						Rights Reserved</p>
+					<p>&copy; 2013, Al Mehfal Restaurant, All Rights Reserved</p>
 				</div>
 			</div>
 		</div>
-	
+		
 		<div id="dialog">
-			<table id="table4">
+			<table id="table4" class="tablesorter">
 				<thead>
 					<tr>
 						<th>Supplier No.</th>
@@ -267,22 +211,24 @@
 					</tr>
 				</thead>
 				<tbody>
-					<c:forEach items="${amounts}" var="data">
-						<tr>
-							<td>${data.supplierNum}</td>
-							<td>${data.supplierName}</td>
-							<td>${data.amount}</td>
-							<td>${data.invoiceDate}</td>
-							<td>
-								<a id="selectSupplier" href="javascript:void(0)"> Select </a>
-							</td>
-						</tr>
-					</c:forEach>
-					<c:if test="${empty amounts}">
-						<tr>
-							<td colspan="4" align="center">No supplier exists</td>
-						</tr>
-					</c:if>
+					<c:choose>
+						<c:when test="${not empty amounts}">
+							<c:forEach items="${amounts}" var="data">
+								<tr>
+									<td>${data.supplierNum}</td>
+									<td>${data.supplierName}</td>
+									<td>${data.amount}</td>
+									<td>${data.invoiceDate}</td>
+									<td><a id="selectSupplier" href="javascript:void(0)"> Select </a></td>
+								</tr>
+							</c:forEach>
+						</c:when>
+						<c:otherwise>
+							<tr>
+								<td colspan="4" align="center">No supplier exists</td>
+							</tr>
+						</c:otherwise>
+					</c:choose>
 				</tbody>
 			</table>
 		</div>
@@ -298,29 +244,33 @@
 					</tr>
 				</thead>
 				<tbody>
-					<c:forEach items="${materials}" var="data1">
-						<tr>
-							<td>${data1.id}</td>
-							<td>${data1.desc}</td>
-							<td>${data1.uom}</td>
-							<td>
-								<a id="selectSupplier" href="javascript:void(0)"> Select </a>
-							</td>
-						</tr>
-					</c:forEach>
-					<c:if test="${empty amounts}">
-						<tr>
-							<td colspan="4" align="center">No raw material exists</td>
-						</tr>
-					</c:if>
+					<c:choose>
+						<c:when test="${not empty materials}">
+							<c:forEach items="${materials}" var="data1">
+								<tr>
+									<td>${data1.id}</td>
+									<td>${data1.desc}</td>
+									<td>${data1.uom}</td>
+									<td>
+										<a id="selectSupplier" href="javascript:void(0)"> Select </a>
+									</td>
+								</tr>
+							</c:forEach>
+						</c:when>
+						<c:otherwise>
+							<tr>
+								<td colspan="4" align="center">No raw material exists</td>
+							</tr>
+						</c:otherwise>
+					</c:choose>
 				</tbody>
 			</table>
 		</div>
 	
 		<script type="text/javascript">
 			$(document).ready(function() {
-				$(".tablesorter").tablesorter({ theme : 'blue'});
-				$("ul.nav").find('li').eq(1).attr('class','current');
+				$(".tablesorter").tablesorter({theme:'default', widgets:['zebra']});
+				$(".nav ul").find('li').eq(1).attr('class','current');
 				
 				$("#invoiceDate").datepicker({
 					dateFormat: 'yy-mm-dd',

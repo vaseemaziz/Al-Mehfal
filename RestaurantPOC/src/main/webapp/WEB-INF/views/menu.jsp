@@ -10,22 +10,11 @@
 <sec:authorize ifAnyGranted="ROLE_ADMIN">
 	<c:set var="role" value="admin"></c:set>
 </sec:authorize>
-<ul style="display: block;" class="nav">
-	<li>
-		<a href='<c:url value="/${role}/sales" />'> Sales </a>
-	</li>
-	<sec:authorize ifAnyGranted="ROLE_MANAGER, ROLE_ADMIN">
-		<li>
-			<a href='<c:url value="/${role}/records" />'> Records </a>
-		</li>
-		<li>
-			<a href='<c:url value="/${role}/salesReports" />'> Reports </a>
-		</li>
-		<li>
-			<a href='<c:url value="/${role}/employees" />'>Employees</a>
-		</li>
-	</sec:authorize>
-	<li>
-		<a href='<c:url value="/logout" />'> Logout </a>
-	</li>
-</ul>
+					<ul>
+						<li><a href='<c:url value="/${role}/sales" />'>Sales</a></li>
+						<sec:authorize ifAnyGranted="ROLE_MANAGER, ROLE_ADMIN">
+							<li><a href='<c:url value="/${role}/records" />'>Records</a></li>
+							<li><a href='<c:url value="/${role}/reports" />'>Reports</a></li>
+						</sec:authorize>
+						<li><a href='<c:url value="/logout" />'>Log Out</a></li>
+					</ul>

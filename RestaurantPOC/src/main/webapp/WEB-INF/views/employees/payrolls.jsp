@@ -5,93 +5,104 @@
 	<c:set var="role" value="user"></c:set>
 </sec:authorize>
 <sec:authorize ifAnyGranted="ROLE_MANAGER">
-	<c:set var="role" value="manager"></c:set>
+	<c:set var="role" value="manager" ></c:set>
 </sec:authorize>
 <sec:authorize ifAnyGranted="ROLE_ADMIN">
 	<c:set var="role" value="admin"></c:set>
 </sec:authorize>
-<!DOCTYPE html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 	<head>
 		<title>Employee Payrolls - Al Mehfal Restaurant</title>
 		<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 
-		<link rel="stylesheet" href="web/css/common.css" type="text/css" />
-		<link href="web/css/theme.blue.css" rel="stylesheet" type="text/css" />
+		<link rel="stylesheet" href="web/css/screen.css" type="text/css" />
+		<link href="web/css/theme.default.css" rel="stylesheet" type="text/css" />
 		
 		<script type="text/javascript" src="web/js/jquery.min.js"></script>
 		<script src="web/js/jquery.tablesorter.js" type="text/javascript"></script>
 		
 		<script type="text/javascript">
 			$(document).ready(function () {
-				$("table").tablesorter({ theme : 'blue'});
-				$("ul.nav").find('li').eq(3).attr('class','current');
+				$("table").tablesorter({theme:'default', widgets:['zebra']});
+				$(".nav ul").find('li').eq(2).attr('class','current');
 			});
 		</script>
 	</head>
 
 	<body>
 		<div id="wrapper">
-			<div id="header">
-				<div id="header_info">
-					<h2>Al Mehfal Restaurant</h2>
-					<jsp:include page="../menu.jsp"></jsp:include>
+			<jsp:include page="../header.jsp"></jsp:include>
+			<div id="content">
+				<div class="tabbed_area">
+					<ul class="tabs">
+						<li><a href='<c:url value="/${role}/viewRawMaterials" />' class="tab">Raw Materials</a></li>
+						<li><a href='<c:url value="/${role}/listSuppliers" />' class="tab">Suppliers</a></li>
+						<li><a href='<c:url value="/${role}/findPurchases" />' class="tab">Purchases</a></li>
+						<li><a href='<c:url value="/${role}/viewExpenses" />' class="tab">Expenses</a></li>
+						<li><a href='<c:url value="/${role}/salesReports" />' class="tab">Sales</a></li>
+						<li><a href='<c:url value="/${role}/showEmployees" />' class="tab">Employees</a></li>
+						<li><a href='<c:url value="/${role}/payrolls" />' class="tab active">Payrolls</a></li>
+					</ul>
+					<div class="content1" style="color:black;">
+						<br /><br /><form method="post" action='<c:url value="/${role}/findPayrolls" />' name="payroll" id="payroll">
+							Month : <select name="month">
+								<option>Jan</option>
+								<option>Feb</option>
+								<option>Mar</option>
+								<option>Apr</option>
+								<option>May</option>
+								<option>June</option>
+								<option>July</option>
+								<option>Aug</option>
+								<option>Sept</option>
+								<option>Oct</option>
+								<option>Nov</option>
+								<option>Dec</option>
+							</select>
+							&nbsp; &nbsp; &nbsp; Year : <input type="text" name="year" />
+							&nbsp; &nbsp; <input type="submit" value="Produce Payroll" />
+						</form><br /><br />
+						<table>
+							<thead><tr>
+								<th>Name</th>
+								<th>Salary</th>
+								<th>Gross Pay</th>
+								<th>Loan Deduction</th>
+								<th>Other Deduction</th>
+								<th>Net Salary</th>
+								<th>Created By</th>
+								<th>Created On</th>
+							</tr></thead>
+							<tbody>
+								<c:choose>
+									<c:when test="${not empty payrolls}">
+										<c:forEach items="${payrolls}" var="payroll">
+											<tr>
+												<td> ${payroll.name} </td>
+												<td> ${payroll.basicSalary} </td>
+												<td> ${payroll.grossPay} </td>
+												<td> ${payroll.loanDeduction} </td>
+												<td> ${payroll.otherDeduction} </td>
+												<td> ${payroll.netSalary} </td>
+												<td> ${payroll.createdBy} </td>
+												<td> ${payroll.createdOn} </td>
+											</tr>
+										</c:forEach>
+										<tr><td colspan="8" align="center"> <br /><input class="btn" type="button" value=" Print " onclick="javascript:window.print();" /> </td> </tr>
+									</c:when>
+									<c:otherwise>
+										<tr><td colspan="8" align="center"> No payrolls found </td> </tr>
+									</c:otherwise>
+								</c:choose>
+							</tbody>
+						</table><br /><br />
+					</div>
 				</div>
 			</div>
-
-			<div class="content_2columns">
-				<form method="post" action='<c:url value="/${role}/findPayrolls" />' name="payroll" id="payroll">
-					Month: <select name="month">
-						<option>Jan</option>
-						<option>Feb</option>
-						<option>Mar</option>
-						<option>Apr</option>
-						<option>May</option>
-						<option>June</option>
-						<option>July</option>
-						<option>Aug</option>
-						<option>Sept</option>
-						<option>Oct</option>
-						<option>Nov</option>
-						<option>Dec</option>
-					</select> &nbsp; &nbsp; &nbsp; Year :
-					<input type="text" name="year" /> &nbsp; &nbsp;
-					<input type="submit" value="Produce Payroll" />
-				</form>
-				<table>
-					<thead><tr>
-						<th>Name</th>
-						<th>Salary</th>
-						<th>Gross Pay</th>
-						<th>Loan Deduction</th>
-						<th>Other Deduction</th>
-						<th>Net Salary</th>
-						<th>Created By</th>
-						<th>Created On</th>
-					</tr></thead>
-					<tbody> <c:forEach items="${payrolls}" var="payroll">
-						<tr>
-							<td> ${payroll.name} </td>
-							<td> ${payroll.basicSalary} </td>
-							<td> ${payroll.grossPay} </td>
-							<td> ${payroll.loanDeduction} </td>
-							<td> ${payroll.otherDeduction} </td>
-							<td> ${payroll.netSalary} </td>
-							<td> ${payroll.createdBy} </td>
-							<td> ${payroll.createdOn} </td>
-						</tr>
-					</c:forEach>
-					<c:if test="${not empty payrolls}">
-						<tr> <td colspan="8" align="center"> <input type="button" value=" Print " onclick="javascript:window.print();" /> </td> </tr>
-					</c:if>
-					</tbody>
-				</table>
-			</div>
-	
 			<div id="footer">
 				<div id="footer_info">
-					<p class="copyright">&copy; 2013, Al Mehfal Restaurant, All
-						Rights Reserved</p>
+					<p>&copy; 2013, Al Mehfal Restaurant, All Rights Reserved</p>
 				</div>
 			</div>
 		</div>

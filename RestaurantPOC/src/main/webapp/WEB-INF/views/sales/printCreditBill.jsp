@@ -46,7 +46,8 @@
 		<h2>Bill Receipt</h2>
 		<table id="table3">
 			<tr>
-				<td colspan="4" align="center">AL MEHFAL RESTAURANT<br />
+				<td colspan="4" align="center">
+					AL MEHFAL RESTAURANT<br />
 					Customer Mobile: ${billFormat.mobile}<br />
 				</td>
 			</tr>
@@ -55,23 +56,20 @@
 			</tr>
 			<c:forEach items="${billFormat.bills}" var="orderForm">
 				<tr>
-					<td colspan="4">Bill ${orderForm.billNum} on
-						${orderForm.billDate}</td>
+					<td colspan="4">Bill ${orderForm.billNum} on ${orderForm.billDate}</td>
 				</tr>
 				<tr>
-					<td>&nbsp;&nbsp;<b>Item</b>
-					</td>
+					<td>&nbsp;&nbsp;<b>Item</b></td>
 					<td><b>Price</b></td>
-					<td><b>Qty</b></td>
-					<td align="right"><b>Amt</b>&nbsp;&nbsp;</td>
+					<td><b>Quantity</b></td>
+					<td align="right"><b>Amount</b>&nbsp;&nbsp;</td>
 				</tr>
 				<c:forEach items="${orderForm.orderedItems}" var="orderItem">
 					<tr>
 						<td>&nbsp;&nbsp;${orderItem.itemName}</td>
 						<td>${orderItem.itemCost}</td>
 						<td>${orderItem.quantity}</td>
-						<c:set var="cost"
-							value="${orderItem.quantity * orderItem.itemCost}" />
+						<c:set var="cost" value="${orderItem.quantity * orderItem.itemCost}" />
 						<td align="right">${cost}&nbsp;&nbsp;</td>
 					</tr>
 				</c:forEach>
@@ -90,8 +88,7 @@
 					</tr>
 					<tr>
 						<td colspan="3" align="right">Total:</td>
-						<td align="right"><b>${orderForm.billNetAmount}</b>&nbsp;&nbsp;
-						</td>
+						<td align="right"><b>${orderForm.billNetAmount}</b>&nbsp;&nbsp;</td>
 					</tr>
 				</c:if>
 				<tr>

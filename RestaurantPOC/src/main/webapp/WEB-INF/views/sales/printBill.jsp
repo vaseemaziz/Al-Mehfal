@@ -46,22 +46,22 @@
 		<h2>Bill Receipt</h2>
 		<table id="table3">
 			<tr>
-				<td colspan="4" align="center">AL MEHFAL RESTAURANT<br />
-					${orderForm.billDate}<br /> <c:if
-						test="${orderForm.salesType eq 'Al-a-Carte'}">
-							Table No.: <b>${orderForm.tableNum}</b> &nbsp;&nbsp;
-						</c:if> Bill No.: ${orderForm.billNum}<br />
+				<td colspan="4" align="center">
+					AL MEHFAL RESTAURANT<br />
+					${orderForm.billDate}<br />
+					<c:if test="${orderForm.salesType eq 'Al-a-Carte'}">
+						Table No.: <b>${orderForm.tableNum}</b> &nbsp;&nbsp;
+					</c:if> Bill No.: ${orderForm.billNum}<br />
 				</td>
 			</tr>
 			<tr>
 				<td colspan="4"><hr /></td>
 			</tr>
 			<tr>
-				<td>&nbsp;&nbsp;<b>Item</b>
-				</td>
+				<td>&nbsp;&nbsp;<b>Item</b></td>
 				<td><b>Price</b></td>
-				<td><b>Qty</b></td>
-				<td align="right"><b>Amt</b>&nbsp;&nbsp;</td>
+				<td><b>Quantity</b></td>
+				<td align="right"><b>Amount</b>&nbsp;&nbsp;</td>
 			</tr>
 			<c:forEach items="${orderForm.orderedItems}" var="orderItem">
 				<tr>
@@ -87,8 +87,7 @@
 				</tr>
 				<tr>
 					<td colspan="3" align="right">Total to Pay:</td>
-					<td align="right"><b>${orderForm.billNetAmount}</b>&nbsp;&nbsp;
-					</td>
+					<td align="right"><b>${orderForm.billNetAmount}</b>&nbsp;&nbsp;</td>
 				</tr>
 			</c:if>
 			<tr>

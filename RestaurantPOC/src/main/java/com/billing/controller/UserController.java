@@ -214,23 +214,14 @@ public class UserController {
 		
 		if(m == 0) {
 			String str1 = getSalesByYear1(y);
-			String days1 = "[\"Jan\", \"Feb\", \"Mar\", \"Apr\", \"May\", \"June\", \"July\", \"Aug\", \"Sept\", \"Oct\", \"Nov\", \"Dec\"]";
-			
-			return "{\"sales\":" + str1 + ",\"days\":" + days1 + "}";
+			return "{\"sales\":" + str1 + "}";
 		}
 		
 		Calendar cal = Calendar.getInstance();
 		cal.set(Calendar.MONTH, m-1);
-		int daysInMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
 		
 		String str = getSalesByMonth1(m, y);
-		
-		String days = "[";
-    	for(int i=0;i<daysInMonth;i++)
-    		days += (i+1) + ",";
-    	days = days.substring(0,days.length()-1) + "]";
-		
-		return "{\"sales\":" + str + ",\"days\":" + days + "}";
+		return "{\"sales\":" + str + "}";
 	}
 	
 	private String getSalesByMonth1(int month, int year) {
@@ -238,8 +229,13 @@ public class UserController {
 		Calendar cal = Calendar.getInstance();
 		cal.set(Calendar.MONTH, month-1);
 		cal.set(Calendar.YEAR, year);
+		int daysInMonth = 0;
 		
-		int daysInMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+		if((year%4==0 && (year%100!=0 || year%400==0)) && (month==2))
+			daysInMonth = 29;
+		else
+			daysInMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+		
 		Properties prop = dishOrderService.getSalesByMonth(month, year);
 		String str = "[";
 		
@@ -248,9 +244,9 @@ public class UserController {
 			String value = prop.getProperty(key);
 			
 			if(value==null)
-				str += "0,";
+				str += "[\"" + key + "\", 0],";
 			else
-				str += value + ",";
+				str += "[\"" + key + "\", " + value + "],";
 		}
 		
 		str = str.substring(0, str.length()-1) + "]";
@@ -265,11 +261,12 @@ public class UserController {
 		for(int i=0; i<12; i++) {
 			String key = "" + (i+1);
 			String value = prop.getProperty(key);
+			String[] months = {"Jan","Feb","Mar","Apr","May","June","July","Aug","Sept","Oct","Nov","Dec"};
 			
 			if(value==null)
-				str += "0,";
+				str += "[\"" + months[i] + "\", 0],";
 			else
-				str += value + ",";
+				str += "[\"" + months[i] + "\", " + value + "],";
 		}
 		
 		str = str.substring(0, str.length()-1) + "]";

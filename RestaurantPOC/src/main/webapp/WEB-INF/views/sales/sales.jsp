@@ -10,30 +10,30 @@
 <sec:authorize ifAnyGranted="ROLE_ADMIN">
 	<c:set var="role" value="admin"></c:set>
 </sec:authorize>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 	<head>
-		<title>SalesPage - Al Mehfal Restaurant</title>
-		<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-
-		<link rel="stylesheet" href="web/css/common.css" type="text/css" media="screen" />
-		<link href="web/css/theme.blue.css" rel="stylesheet" type="text/css" />
-		
+		<title>Sales Page - Al Mehfal Restaurant</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<link rel="stylesheet" type="text/css" href="web/css/screen.css" />
+		<link rel="stylesheet" type="text/css" href="web/css/sales.css" />
+		<link rel="stylesheet" type="text/css" href="web/css/theme.default.css" />
 		<script type="text/javascript" src="web/js/jquery.min.js"></script>
-		<script src="web/js/jquery.tablesorter.js" type="text/javascript"></script>
+		<script type="text/javascript" src="web/js/jquery.tablesorter.js"></script>
+		<!--[if lte IE 8]>
+			<script type="text/javascript" src="web/js/excanvas.min.js"></script>
+		<![endif]-->
+		<script type="text/javascript" src="web/js/jquery.flot.min.js"></script>
+		<script type="text/javascript" src="web/js/jquery.flot.categories.min.js"></script>
 		
 		<c:if test="${not billToPrint}">
-			<link href="web/css/sales.css" rel="stylesheet" type="text/css" />
 			<link href="web/css/jquery.ui.css" rel="stylesheet" type="text/css" />
 			<link href="web/css/jquery.ui.theme.css" rel="stylesheet" type="text/css" />
 			<link href="web/css/jquery.validation.css" rel="stylesheet" type="text/css" />
-			
 			<script src="web/js/jquery.ui.js" type="text/javascript"></script>
 			<script src="web/js/jquery.validation.js" type="text/javascript"></script>
 			<script src="web/js/jquery.validation-en.js" type="text/javascript"></script>
-			<script src="web/js/jquery.ui.touch-punch.js" type="text/javascript"></script>
 		</c:if>
-		
 		<style type="text/css">
 			#table3 {
 				width: 430px;
@@ -66,374 +66,328 @@
 
 	<body>
 		<div id="wrapper">
-			<div id="header">
-				<div id="header_info">
-					<h2>Al Mehfal Restaurant</h2>
-					<jsp:include page="../menu.jsp"></jsp:include>
-				</div>
-			</div>
-			<c:if test="${not empty errors}">
-				<div class="content_2columns" style="color:red;">
-					<c:forEach items="${errors}" var="error">
-						${error} <br />
-					</c:forEach>
-				</div>
-			</c:if>
-			<div class="content_2columns">
-				<div id="col1">
-					<c:choose>
-						<c:when test="${billToPrint}">
-							<h2> Bill Receipt </h2>
-							<table id="table3">
-								<tr>
-									<td colspan="4" align="center">
-										<b>AL MEHFAL RESTAURANT<br />
-										${orderForm.billDate}<br />
-										<c:if test="${orderForm.salesType eq 'Al-a-Carte'}">
-											Table No.: <b>${orderForm.tableNum}</b> &nbsp;&nbsp;
-										</c:if>
-										Bill No.: ${orderForm.billNum}</b><br />
-									</td>
-								</tr>
-								<tr><td colspan="4"><hr /></td></tr>
-								<tr>
-									<td> &nbsp;&nbsp;<b>Item</b>
-									</td> <td> <b>Price</b> </td>
-									<td> <b>Qty</b> </td>
-									<td align="right"> <b>Amt</b>&nbsp;&nbsp; </td>
-								</tr>
-								<c:forEach items="${orderForm.orderedItems}" var="orderItem">
+			<jsp:include page="../header.jsp"></jsp:include>
+			<div id="content">
+				<div class="cols2">
+					<div class="box1">
+						<c:choose>
+							<c:when test="${billToPrint}">
+								<h2> Bill Receipt </h2>
+								<table id="table3">
 									<tr>
-										<td> &nbsp;&nbsp;${orderItem.itemName} </td>
-										<td> ${orderItem.itemCost} </td>
-										<td> ${orderItem.quantity} </td>
-										<c:set var="cost" value="${orderItem.quantity * orderItem.itemCost}" />
-										<td align="right"> ${cost}&nbsp;&nbsp; </td>
+										<td colspan="4" align="center">
+											<b>AL MEHFAL RESTAURANT<br /> ${orderForm.billDate}<br />
+											<c:if test="${orderForm.salesType eq 'Al-a-Carte'}">
+												Table No.: <b>${orderForm.tableNum}</b> &nbsp;&nbsp;
+											</c:if>Bill No.: ${orderForm.billNum}</b><br />
+										</td>
 									</tr>
-								</c:forEach>
-								<tr><td colspan="4"><hr /></td></tr>
-								<tr>
-									<td colspan="3" align="right"> Total Amount: </td>
-									<td align="right"> <b>${orderForm.billAmount}</b>&nbsp;&nbsp; </td>
-								</tr>
-								<c:set var="discount" value="${orderForm.discount}"/>
-								<c:if test="${discount > 0}">
+									<tr><td colspan="4"><hr /></td></tr>
 									<tr>
-										<td colspan="3" align="right"> Discount: </td>
-										<td align="right"> <b>${orderForm.discount}</b>&nbsp;&nbsp; </td>
+										<td>&nbsp;&nbsp;<b>Item</b></td>
+										<td><b>Price</b></td>
+										<td><b>Qty</b></td>
+										<td align="right"><b>Amt</b>&nbsp;&nbsp;</td>
 									</tr>
-									<tr>
-										<td colspan="3" align="right"> Total to Pay: </td>
-										<td align="right"> <b>${orderForm.billNetAmount}</b>&nbsp;&nbsp; </td>
-									</tr>
-								</c:if>
-								<tr><td colspan="4"><hr /></td></tr>
-								<tr>
-									<td colspan="4" align="center">
-										<c:choose>
-											<c:when test="${orderForm.billType eq 'Credit'}">
-												<a class="btn" target="_blank" href='<c:url value="/${role}/printCreditBill" />?creditId=${orderForm.creditId}'>
-													Print Complete Credit Bill Receipt
-												</a>
-											</c:when>
-											<c:otherwise>
-												<a class="btn" target="_blank" href='<c:url value="/${role}/printBill" />?billNum=${orderForm.billNum}'>
-													Print Bill Receipt
-												</a>
-											</c:otherwise>
-										</c:choose>
-									</td>
-								</tr>
-							</table>
-						</c:when>
-						<c:otherwise>
-							<form name="orderForm" id="orderForm" method="post" 
-								action='<c:url value="/${role}/saveOrder" />'>
-								
-									<fieldset>
-										<legend> Restaurant Bills</legend> <br />
-										<table id="table1">
-											<colgroup>
-												<col id="col1" />
-												<col id="col2" />
-												<col id="col3" />
-												<col id="col4" />
-											</colgroup>
-											<tr>
-												<td align="right"> Bill No <b>:</b>&nbsp; </td>
-												<td>
-													<input class="uneditable validate[required,custom[integer]]"
-														type="text" id="billNum" name="billNum"
-														value="${orderForm.billNum}" readonly />
-												</td>
-			
-												<td align="right"> Bill Date <b>:</b>&nbsp; </td>
-												<td>
-													<input class="uneditable validate[required,minSize[19],maxSize[20]]"
-														type="text" id="billDate" name="billDate"
-														value="${orderForm.billDate}" readonly />
-												</td>
-											</tr>
-											<tr>
-												<td align="right"> Bill Amount <b>:</b>&nbsp; </td>
-												<td>
-													<input class="uneditable validate[required,custom[number]]"
-														type="text" id="billAmount" name="billAmount"
-														value="${orderForm.billAmount}" readonly />
-												</td>
-												<td align="right"> Discount <b>:</b>&nbsp; </td>
-												<td>
-													<input type="text" class="validate[required,custom[number]]"
-														id="billDiscount" name="discount"
-														value="${orderForm.discount}" />
-												</td>
-											</tr>
-											<tr>
-												<td align="right"> Net Amount <b>:</b>&nbsp; </td>
-												<td> <input class="uneditable validate[required,custom[number]]"
-														type="text" id="billNetAmount" name="billNetAmount"
-														value="${orderForm.billNetAmount}" readonly />
-												</td>
-												<td align="right"> Created By <b>:</b>&nbsp; </td>
-												<td> <input class="uneditable validate[required,minSize[3]]" type="text"
-														name="createdBy" value="${orderForm.createdBy}" readonly />
-												</td>
-											</tr>
-											<tr>
-												<td align="right"> Sales Type <b>:</b>&nbsp; </td>
-												<td>
-													<c:choose>
-														<c:when test="${billToOpen}">
-															<input type="text" class="uneditable" name="salesType" 
-																value="${orderForm.salesType}" readonly />
-														</c:when>
-														<c:otherwise>
-															<select name="salesType" id="salesType"
-																class="validate[required]">
-																<option selected="selected"> Al-a-Carte </option>
-																<option> Parcel </option>
-																<option> Bulk </option>
-															</select>
-															<script type="text/javascript">
-																$(document).ready(function() {
-																	$("#salesType").val('${orderForm.salesType}');
-																	$("#salesType").change(function() {
-																		var myvalue = $.trim($("#salesType").val());
-																		
-																		if(myvalue=='Parcel' || myvalue=='Bulk') {
-																			$("#tableNum").attr('disabled', 'disabled');
-																		}
-																		else {
-																			$("#tableNum").removeAttr('disabled');
-																		}
-																	});
-																});
-															</script>
-														</c:otherwise>
-													</c:choose>
-												</td>
-												<td align="right"> Table# <b>:</b>&nbsp; </td>
-												<td>
-													<c:choose>
-														<c:when test="${billToOpen}">
-															<input type="text" class="uneditable" name="tableNum" 
-																value="${orderForm.tableNum}" />
-														</c:when>
-														<c:otherwise>
-															<select name="tableNum" id="tableNum"
-																class="validate[required]">
-																<option> T01 </option>
-																<option> T02 </option>
-																<option> T03 </option>
-																<option> T04 </option>
-																<option> T05 </option>
-																<option> T06 </option>
-																<option> T07 </option>
-																<option> T08 </option>
-															</select>
-															<script type="text/javascript">
-																$("#tableNum").val('${orderForm.tableNum}');
-															</script>
-														</c:otherwise>
-													</c:choose>
-													<input type="hidden" id="creditId" name="creditId" />
-													<input type="hidden" id="billType" name="billType" value="cash" />
-													<input type="hidden" id="paidAmt" name="paidAmount" value="0.00" />
-												</td>
-											</tr>
-										</table>
-										<br /> <br />
-										<table id="table2" class="menuitems">
-											<tr>
-												<td class="noBorder" align="right" colspan="5">
-													<div class="btn" id="newBill"> New Bill </div>
-													<div class="btn" id="saveBill"> Save Bill </div>
-													<div class="btn" id="cancelBill"> Cancel Bill </div>
-													<div class="btn" id="printBill"> Print Bill </div>
-													<div class="btn" id="openMenu"> Menu Items </div>
-													<br /> <br />
-												</td>
-											</tr>
-											<tr>
-												<th> <br />Menu Item </th>
-												<th> <br />Price </th>
-												<th> <br />Quantity </th>
-												<th> Bill Line<br />Amount </th>
-												<th> <img src="web/images/remove.png" 
-														width="18px" height="18px" /> </th>
-											</tr>
-											<c:forEach items="${orderForm.orderedItems}" var="orderItem" varStatus="status">
-												<tr>
-													<td> <input type="text" id="tag"
-															name="orderedItems[${status.index}].itemName" 
-															class="uneditable validate[required,maxSize[50]]"
-															value="${orderItem.itemName}" />
-													</td>
-													<td> <input class="uneditable validate[required,customer[number]]" type="text"
-															name="orderedItems[${status.index}].itemCost"
-															value="${orderItem.itemCost}" readonly />
-													</td>
-													<td> <input type="text" id="qty" class="validate[required,custom[integer]]"
-															name="orderedItems[${status.index}].quantity"
-															value="${orderItem.quantity}" />
-													</td>
-													<td>
-														<c:set var="billLineAmt" value="${orderItem.itemCost * orderItem.quantity} "/>
-														<input class="uneditable" type="text" value="${billLineAmt}" disabled />
-													</td>
-													<td>
-														<img src="web/images/delete.png"
-															width="18px" height="18px" />
-													</td>
-												</tr>
-											</c:forEach>
-										</table>
-									</fieldset>
-							</form>
-						</c:otherwise>
-					</c:choose>
-				</div>
-
-				<div id="col2">
-					<h4 style="text-align:right;"> <a href='<c:url value="/${role}/creditDetails" />'> Credit Reminder </a> </h4>
-					<h3> Current Bills </h3>
-					<table class="tablesorter" id="currentBills">
-						<thead>
-							<tr>
-								<th> Bill No. </th>
-								<th> Bill Date </th>
-								<th> Net Amount </th>
-								<th> Table# </th>
-								<th> </th>
-							</tr>
-						</thead>
-						<tbody>
-							<c:forEach items="${pendingOrders}" var="prevOrderForm">
-								<c:choose>
-									<c:when test="${orderForm.billNum != prevOrderForm.billNum}">
+									<c:forEach items="${orderForm.orderedItems}" var="orderItem">
 										<tr>
-											<td> ${prevOrderForm.billNum} </td>
-											<td> ${prevOrderForm.billDate} </td>
-											<td> ${prevOrderForm.billNetAmount} </td>
-											<td> ${prevOrderForm.tableNum} </td>
-											<td> <input type="button" value="Open Order" 
-													class="button" id="openOrder" />
+											<td>&nbsp;&nbsp;${orderItem.itemName}</td>
+											<td>${orderItem.itemCost}</td>
+											<td>${orderItem.quantity}</td>
+											<c:set var="cost" value="${orderItem.quantity * orderItem.itemCost}" />
+											<td align="right">${cost}&nbsp;&nbsp;</td>
+										</tr>
+									</c:forEach>
+									<tr><td colspan="4"><hr /></td></tr>
+									<tr>
+										<td colspan="3" align="right"> Total Amount: </td>
+										<td align="right"> <b>${orderForm.billAmount}</b>&nbsp;&nbsp; </td>
+									</tr>
+									<c:set var="discount" value="${orderForm.discount}"/>
+									<c:if test="${discount > 0}">
+										<tr>
+											<td colspan="3" align="right"> Discount: </td>
+											<td align="right"> <b>${orderForm.discount}</b>&nbsp;&nbsp; </td>
+										</tr>
+										<tr>
+											<td colspan="3" align="right"> Total to Pay: </td>
+											<td align="right"> <b>${orderForm.billNetAmount}</b>&nbsp;&nbsp; </td>
+										</tr>
+									</c:if>
+									<tr><td colspan="4"><hr /></td></tr>
+									<tr>
+										<td colspan="4" align="center">
+											<c:choose>
+												<c:when test="${orderForm.billType eq 'Credit'}">
+													<a class="btn" target="_blank" href='<c:url value="/${role}/printCreditBill" />?creditId=${orderForm.creditId}'>
+														Print Complete Credit Bill Receipt
+													</a>
+												</c:when>
+												<c:otherwise>
+													<a class="btn" target="_blank" href='<c:url value="/${role}/printBill" />?billNum=${orderForm.billNum}'>Print Bill Receipt</a>
+												</c:otherwise>
+											</c:choose>
+										</td>
+									</tr>
+								</table>
+							</c:when>
+							<c:otherwise>
+								<h3>Restaurant Bills</h3><br />
+								<form name="orderForm" id="orderForm" method="post" action='<c:url value="/${role}/saveOrder" />'>
+									<table id="table1">
+										<colgroup>
+											<col id="col1" />
+											<col id="col2" />
+											<col id="col3" />
+											<col id="col4" />
+										</colgroup>
+										<tr>
+											<td align="right"> Bill No <b>:</b>&nbsp; </td>
+											<td>
+												<input class="uneditable" type="text" id="billNum" name="billNum" value="${orderForm.billNum}" readonly="readonly" />
+											</td>
+		
+											<td align="right"> Bill Date <b>:</b>&nbsp; </td>
+											<td>
+												<input class="uneditable1" type="text" id="billDate" name="billDate" value="${orderForm.billDate}" readonly="readonly" />
 											</td>
 										</tr>
-									</c:when>
-								</c:choose>
-							</c:forEach>
-							<c:if test="${empty pendingOrders}">
+										<tr>
+											<td align="right"> Bill Amount <b>:</b>&nbsp; </td>
+											<td>
+												<input class="uneditable" type="text" id="billAmount" name="billAmount" value="${orderForm.billAmount}" readonly="readonly" />
+											</td>
+											<td align="right"> Discount <b>:</b>&nbsp; </td>
+											<td>
+												<input type="text" class="validate[required,custom[number]]" id="billDiscount" name="discount" value="${orderForm.discount}" />
+											</td>
+										</tr>
+										<tr>
+											<td align="right"> Net Amount <b>:</b>&nbsp; </td>
+											<td>
+												<input class="uneditable" type="text" id="billNetAmount" name="billNetAmount" value="${orderForm.billNetAmount}" readonly="readonly" />
+											</td>
+											<td align="right"> Sales Type <b>:</b>&nbsp; </td>
+											<td>
+												<c:choose>
+													<c:when test="${billToOpen}">
+														<input type="text" class="uneditable" name="salesType" value="${orderForm.salesType}" readonly="readonly" />
+													</c:when>
+													<c:otherwise>
+														<select name="salesType" id="salesType">
+															<option selected="selected"> Al-a-Carte </option>
+															<option> Parcel </option>
+															<option> Bulk </option>
+														</select>
+														<script type="text/javascript">
+															$(document).ready(function() {
+																$("#salesType").val('${orderForm.salesType}');
+																$("#salesType").change(function() {
+																	var myvalue = $.trim($("#salesType").val());
+																	
+																	if(myvalue=='Parcel' || myvalue=='Bulk') {
+																		$("#tableNum").attr('disabled', 'disabled');
+																	}
+																	else {
+																		$("#tableNum").removeAttr('disabled');
+																	}
+																});
+															});
+														</script>
+													</c:otherwise>
+												</c:choose>
+											</td>
+										</tr>
+										<tr>
+											<td align="right"> Created By <b>:</b>&nbsp; </td>
+											<td>
+												<input class="uneditable" type="text" name="createdBy" value="${orderForm.createdBy}" readonly="readonly" />
+											</td>
+											<td align="right"> Table# <b>:</b>&nbsp; </td>
+											<td>
+												<c:choose>
+													<c:when test="${billToOpen}">
+														<input type="text" class="uneditable" name="tableNum" value="${orderForm.tableNum}" />
+													</c:when>
+													<c:otherwise>
+														<select name="tableNum" id="tableNum">
+															<option selected="selected"> T01 </option>
+															<option> T02 </option>
+															<option> T03 </option>
+															<option> T04 </option>
+															<option> T05 </option>
+															<option> T06 </option>
+															<option> T07 </option>
+															<option> T08 </option>
+														</select>
+														<script type="text/javascript">
+															$("#tableNum").val('${orderForm.tableNum}');
+														</script>
+													</c:otherwise>
+												</c:choose>
+												<input type="hidden" id="creditId" name="creditId" />
+												<input type="hidden" id="billType" name="billType" value="cash" />
+												<input type="hidden" id="paidAmt" name="paidAmount" value="0.00" />
+											</td>
+										</tr>
+									</table>
+									<table id="table2" class="menuitems">
+										<tr>
+											<td class="noBorder" align="right" colspan="5"><br /><br />
+												<div class="btn" id="newBill"> New Bill </div>
+												<div class="btn" id="saveBill"> Save Bill </div>
+												<div class="btn" id="cancelBill"> Cancel Bill </div>
+												<div class="btn" id="printBill"> Print Bill </div>
+												<div class="btn" id="openMenu"> Menu Items </div>
+												<br /> <br />
+											</td>
+										</tr>
+										<tr>
+											<th> <br />Menu Item </th>
+											<th> <br />Price </th>
+											<th> <br />Quantity </th>
+											<th> Bill Line<br />Amount </th>
+											<th> <img src="web/images/remove.png" width="18px" height="18px" /> </th>
+										</tr>
+										<c:forEach items="${orderForm.orderedItems}" var="orderItem" varStatus="status">
+											<tr>
+												<td>
+													<input type="text" id="tag" name="orderedItems[${status.index}].itemName" class="uneditable" value="${orderItem.itemName}" readonly="readonly" />
+												</td>
+												<td>
+													<input class="uneditable" type="text" name="orderedItems[${status.index}].itemCost" value="${orderItem.itemCost}" readonly="readonly" />
+												</td>
+												<td>
+													<input type="text" id="qty" class="validate[required,custom[integer]]" name="orderedItems[${status.index}].quantity" value="${orderItem.quantity}" />
+												</td>
+												<td>
+													<c:set var="billLineAmt" value="${orderItem.itemCost * orderItem.quantity} "/>
+													<input class="uneditable" type="text" value="${billLineAmt}" disabled="disabled" />
+												</td>
+												<td><img src="web/images/delete.png" width="18px" height="18px" /></td>
+											</tr>
+										</c:forEach>
+									</table>
+								</form>
+							</c:otherwise>
+						</c:choose>
+					</div>
+				</div>
+				<div class="cols2">
+					<div class="box2">
+						<table width="100%">
+							<tr>
+								<td><h3> Current Bills </h3></td>
+								<td align="right">
+									<h4>
+										<a target="_blank" href='<c:url value="/${role}/creditDetails" />'>Credit Reminder</a>
+									</h4>
+								</td>
+							</tr>
+						</table>
+						<table class="tablesorter" id="currentBills">
+							<thead>
 								<tr>
-									<td colspan="5" align="center">
-										No pending orders
-									</td>
+									<th> Bill No. </th>
+									<th> Bill Date </th>
+									<th> Net Amount </th>
+									<th> Table# </th>
+									<th> </th>
 								</tr>
-							</c:if>
-						</tbody>
-					</table> <br />
-					<table border="0" id="graphTable">
-						<tr>
-							<td align="center">
-								<select name="month" id="month">
-									<option value="0">All</option>
-									<option value="1">Jan</option>
-									<option value="2">Feb</option>
-									<option value="3">Mar</option>
-									<option value="4">Apr</option>
-									<option value="5">May</option>
-									<option value="6">June</option>
-									<option value="7">July</option>
-									<option value="8">Aug</option>
-									<option value="9">Sept</option>
-									<option value="10">Oct</option>
-									<option value="11">Nov</option>
-									<option value="12">Dec</option>
-								</select> &nbsp; <input type="text" name="year" id="year" size="4" value="${year}" />
-								&nbsp; <input type="button" value=" Get " id="getGraph" />
+							</thead>
+							<tbody>
+								<c:choose>
+									<c:when test="${not empty pendingOrders}">
+										<c:forEach items="${pendingOrders}" var="prevOrderForm">
+											<c:choose>
+												<c:when test="${orderForm.billNum != prevOrderForm.billNum}">
+													<tr>
+														<td> ${prevOrderForm.billNum} </td>
+														<td> ${prevOrderForm.billDate} </td>
+														<td> ${prevOrderForm.billNetAmount} </td>
+														<td> ${prevOrderForm.tableNum} </td>
+														<td> <input type="button" value="Open Order" class="button" id="openOrder" /> </td>
+													</tr>
+												</c:when>
+											</c:choose>
+										</c:forEach>
+									</c:when>
+									<c:otherwise>
+										<tr>
+											<td colspan="5" align="center">
+												No pending orders
+											</td>
+										</tr>
+									</c:otherwise>
+								</c:choose>
+							</tbody>
+						</table>
+						<table border="0" id="graphTable" width="100%">
+							<tr>
+								<td align="center"><br />
+									<select name="month" id="month">
+										<option value="0">All</option>
+										<option value="1">Jan</option>
+										<option value="2">Feb</option>
+										<option value="3">Mar</option>
+										<option value="4">Apr</option>
+										<option value="5">May</option>
+										<option value="6">June</option>
+										<option value="7">July</option>
+										<option value="8">Aug</option>
+										<option value="9">Sept</option>
+										<option value="10">Oct</option>
+										<option value="11">Nov</option>
+										<option value="12">Dec</option>
+									</select>
+									&nbsp; <input type="text" name="year" id="year" size="4" value="${year}" />
+									&nbsp; <input type="button" value=" Get " id="update" class="button" />
+								</td>
+							</tr>
+						</table><br />
+						<div id="chart1"></div>
+						<script type="text/javascript">
+							$(function() {
+					
+								var data = ${sales};
+								var options = {
+									series: {
+										bars: {
+											show: true,
+											barWidth: 0.1,
+											align: "center"
+										}
+									},
+									xaxis: {
+										mode: "categories",
+										tickLength: 0
+									}
+								};
 								
-								<script type="text/javascript">
-									$("#month").val('${month}');
-									$("#getGraph").click(function(){
-										var m = $("#month").val();
-										var y = $("#year").val();
-										var url = '<c:url value="/${role}/salesByMonth" />?month='+m+'&year='+y;
-										$.ajax({
-											url: url,
-											success: function(data) {
-												var obj = jQuery.parseJSON(data);
-												chart.series[0].setData(obj.sales, false);
-												chart.xAxis[0].setCategories(obj.days, false);
-												chart.redraw();
-											}
-										});
+								$.plot("#chart1", [ data ], options);
+								$("#month").val('${month}');
+								
+								$("#update").click(function(){
+									var m = $("#month").val();
+									var y = $("#year").val();
+									var url = '<c:url value="/${role}/salesByMonth" />?month='+m+'&year='+y;
+									$.ajax({
+										url: url,
+										success: function(data1) {
+											var obj = jQuery.parseJSON(data1);
+											data = obj.sales;
+											$.plot("#chart1", [ data ], options);
+										}
 									});
-								</script>
-							</td>
-						</tr>
-						<tr>
-							<td id="graph">
-								<script type="text/javascript" src="web/js/highcharts.js"></script>
-								<div id="container1" style="width:410px;height:300px;margin:0 auto"></div>
-								<script type="text/javascript">
-									var chart = new Highcharts.Chart({
-										chart: {
-											renderTo: 'container1',
-											type: 'column'
-										},
-										title: {
-											text: 'Sales Report'
-										},
-										yAxis: {
-											min: 0,
-										    title: {
-										    	text: 'No. of Sales'
-											}
-										},
-										exporting: {
-											enabled: false
-										},
-										plotOptions: {
-											column: {
-										    	pointPadding: 0.2,
-												borderWidth: 0
-											}
-										},
-										series: [{
-											name: 'Sales',
-											data: ${sales}
-										}]
-									});
-								</script>
-							</td>
-						</tr>
-					</table>
+								});
+							});
+						</script>
+					</div>
 				</div>
 			</div>
-
 			<div id="footer">
 				<div id="footer_info">
-					<p class="copyright">&copy; 2013, Al Mehfal Restaurant, All Rights Reserved</p>
+					<p>&copy; 2013, Al Mehfal Restaurant, All Rights Reserved</p>
 				</div>
 			</div>
 		</div>
@@ -525,7 +479,6 @@
 						buttons: {
 							Ok: function() {
 								$(this).dialog("close");
-
 								var myvalue1 = $.trim($("#billing").val());
 								if(myvalue1=="Cash") {
 									var myselect2 = document.getElementById("billing");
@@ -630,7 +583,6 @@
 											var myvalue4 = myselect4.options[myselect4.selectedIndex].value;
 											$("#billType").val(myvalue4);
 											$("#creditId").val(cmobile);
-											
 											$("#part3").dialog("close");
 											$("#part4").dialog("open");
 										}
@@ -687,6 +639,7 @@
 							$("#accordion").css('display','block');
 						}
 					});
+					
 					$("#dishItems").dialog("widget").draggable("option","containment","none");
 					
 					$("#accordion").accordion({
@@ -700,22 +653,18 @@
 							if(this.rowIndex > 1)
 								var cost = 0;
 								cost = $(this).find("td").eq(3).find('input').val();
-								
 								if(cost=='' || isNaN(cost))
 									cost = 0.00;
 								else
 									cost = parseFloat(cost);
-								
 								sum += cost;
 						});
-	
 						$('#billAmount').val(sum);
 						var discount = $('#billDiscount').val();
 						if(isNaN(discount))
 							discount = 0;
 						else
 							discount = parseFloat(discount);
-							
 						$('#billNetAmount').val(sum - discount);
 					}
 					
@@ -743,17 +692,14 @@
 										var one = $(this).find("td").eq(0).find('input').eq(0);
 										var newName = one.attr('name').replace(/\[[0-9]+\]/i, '[' + (index-2) + ']');
 										one.attr('name', newName);
-	
 										var two = $(this).find("td").eq(1).find('input').eq(0);
 										newName = two.attr('name').replace(/\[[0-9]+\]/i, '[' + (index-2) + ']');
 										two.attr('name', newName);
-	
 										var three = $(this).find("td").eq(2).find('input').eq(0);
 										newName = three.attr('name').replace(/\[[0-9]+\]/i, '[' + (index-2) + ']');
 										three.attr('name', newName);
 									}
 								});
-								
 								if($.trim($("#billNum").val()) == '')
 									$("#billNum").val(0);
 								return true;
@@ -768,7 +714,6 @@
 						var value = $(this).attr('class');
 						var name = $(this).html();
 						var flag = false;
-	
 						$('.menuitems tr').each(function(index) {
 							if(index > 1) {
 								var itemData = $(this).find("td").eq(0).find('input').eq(0).val();
@@ -783,7 +728,6 @@
 								}
 							}
 						});
-	
 						if(flag==false) {
 							var index = $('.menuitems tr').length - 2;
 							$(".menuitems")
@@ -815,7 +759,7 @@
 						}
 						calculateBill();
 					});
-	
+					
 					$(document).on("click", ".menuitems tbody tr td img", function(event) {
 						var index = $('.menuitems tr').length - 2;
 						if(index <= 0) {
@@ -826,6 +770,7 @@
 							if(removeConfirm == true) {
 								var row = $(this).parent().parent();
 								row.remove();
+								calculateBill();
 							}
 						}
 					});
@@ -835,7 +780,7 @@
 						$(this).css({'border': '2px inset #cccccc'});
 						$(this).css({'background': '#8fca10'});
 					});
-	
+					
 					$(document).on("mouseup", "div#menuButton", function(event) {
 						event.preventDefault();
 						$(this).css({'border': '2px outset #cccccc'});
@@ -851,7 +796,7 @@
 					$("#saveBill").click(function() {
 						$("form").submit();
 					});
-	
+					
 					$("#newBill").click(function() {
 						var newBillConfirm = confirm("Do you want to save the changes in current order?");
 						if(newBillConfirm == true)
@@ -878,10 +823,9 @@
 						else
 							$("#part1").dialog("open");
 					});
-	
+					
 					$(document).on("click", "input#openOrder", function() {
-						var openBillConfirm = confirm("Before opening a existing bill, check whether current bill is saved or not\n" + 
-														"Are you sure, do you want to open the existing bill?");
+						var openBillConfirm = confirm("Before opening a existing bill, check whether current bill is saved or not\nAre you sure, do you want to open the existing bill?");
 						if(openBillConfirm == true) {
 							var row = $(this).parent().parent();
 							var value = row.find('td').eq(0).html();
@@ -895,9 +839,9 @@
 		
 		<script type="text/javascript">
 			$(document).ready(function () {
-				$("table").tablesorter({ theme : 'blue'});
+				$("table").tablesorter({theme:'default', widgets:['zebra']});
 				<c:if test="${not billToPrint}">
-					$("ul.nav").find('li').eq(0).attr('class','current');
+					$(".nav ul").find('li').eq(0).attr('class','current');
 				</c:if>
 			});
 		</script>
